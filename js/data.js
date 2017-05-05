@@ -1,6 +1,6 @@
 if ('geolocation' in navigator){
     navigator.geolocation.getCurrentPosition(function(position){
-        console.log(position.coords.latitude, position.coords.longitude, position.coords.altitude);
+        getDevicesNear(position.coords.latitude, position.coords.longitude);
     });
 }
 else{
@@ -15,7 +15,9 @@ function reqListener() {
     console.log(this.responseText);
 }
 
-var dataReq = new XMLHttpRequest();
-dataReq.addEventListener('load', reqListener);
-dataReq.open('GET', 'https://api.smartcitizen.me/v0/devices');
-dataReq.send();
+function getDevicesNear(lat, long){
+    dataReq = new XMLHttpRequest();
+    dataReq.addEventListener('load', reqListener);
+    dataReq.open('GET', 'https://api.smartcitizen.me/v0/devices?near='+lat+','+long);
+    dataReq.send();
+}
