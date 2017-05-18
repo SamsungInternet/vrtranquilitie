@@ -1,0 +1,22 @@
+{
+  "lang": "en",
+  "dir": "ltr",
+  "name": "vr tranquilities",
+  "description": "vr tranquilities experience",
+  "short_name": "vr tranquilities",
+  "icons": [{
+    "src": "imgs/icon192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "imgs/icon512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "theme_color": "#A00F22",
+  "background_color": "#FFFFFF"
+}

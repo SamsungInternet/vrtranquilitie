@@ -4,10 +4,23 @@
         <title>vr tranquilities</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="manifest.json">
         <link href="css/style.css" rel="stylesheet">
+        <script src="swreg.js"></script>
+        <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+        <script src="js/aframe-extras.ocean.min.js"></script>
+        <script src="js/aframe-particle-system-component.min.js">
+            
+        </script>
+
         <script src="js/data.js"></script>
     </head>
     <body>
-    
+        <a-scene>
+            <a-sky color="#3d3d3d"></a-sky>
+            <a-entity position="0 0 0" particle-system="preset: dust"></a-entity>
+            <a-ocean id="wall0" width="100" depth="100" density="50" position="0 0 -5" color=silver></a-ocean>
+            <a-entity position="0 0 -15" particle-system="preset: dust; opacity:.3"></a-entity>
+        </a-scene>
     </body>
 </html>

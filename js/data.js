@@ -1,23 +1,37 @@
-if ('geolocation' in navigator){
-    navigator.geolocation.getCurrentPosition(function(position){
-        getDevicesNear(position.coords.latitude, position.coords.longitude);
-    });
-}
-else{
-    console.log('using default position // Paris');
-}
+var workingDate = null;
+var position = null;
+var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
+
 
 document.addEventListener('DOMContentLoaded', function() {
-       
+    init();
+    //get date
+    workingDate = new Date();
+    //get location
+    if ('geolocation' in navigator){
+        navigator.geolocation.getCurrentPosition(function(pos){
+            position = pos;
+            getDevicesNear(pos.coords.latitude, pos.coords.longitude);
+        });
+    }
+    else{
+        console.log('using default position // Paris');
+    }
 });
 
-function reqListener() {
-    console.log(this.responseText);
+function reqListener() {    
+    let respData = JSON.parse(this.responseText);
+    console.log(respData);
 }
 
-function getDevicesNear(lat, long){
+function getDevicesNear(lat, lon){
     dataReq = new XMLHttpRequest();
     dataReq.addEventListener('load', reqListener);
-    dataReq.open('GET', 'https://api.smartcitizen.me/v0/devices?near='+lat+','+long);
+    var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&units=metric&APPID='+_APPID;
+    dataReq.open('GET', req);
     dataReq.send();
+}
+
+function init(){
+
 }
