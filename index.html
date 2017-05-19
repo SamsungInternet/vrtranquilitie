@@ -9,14 +9,15 @@
         <script src="swreg.js"></script>
         <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
         <script src="js/aframe-extras.ocean.min.js"></script>
-        <script src="js/aframe-particle-system-component.min.js">
-            
-        </script>
+        <script src="js/aframe-particle-system-component.min.js"></script>
 
         <script src="js/data.js"></script>
     </head>
     <body>
+        <audio id="micStream"></audio>
         <a-scene>
+            <a-assets>
+            </a-assets>
             <a-sky color="#3d3d3d"></a-sky>
             <a-entity position="0 0 0" particle-system="preset: dust"></a-entity>
             <a-ocean id="wall0" width="100" depth="100" density="50" position="0 0 -5" color=silver></a-ocean>

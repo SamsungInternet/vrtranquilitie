@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
     else{
         console.log('using default position // Paris');
     }
+    //get microphone stream
+    var mediaconstraints = {audio:true};
+    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
+         var micAudioTag = document.getElementById('micStream');
+         micAudioTag.src = window.URL.createObjectURL(mediaStream);
+         micAudioTag.play();
+    }).catch(function(err){console.log(err.name + ": " + err.message);});
+
 });
 
 function reqListener() {    
