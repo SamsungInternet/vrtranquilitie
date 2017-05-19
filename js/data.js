@@ -17,14 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
     else{
         console.log('using default position // Paris');
     }
+    //set audio context
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     //get microphone stream
     var mediaconstraints = {audio:true};
-    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
-         var micAudioTag = document.getElementById('micStream');
-         micAudioTag.src = window.URL.createObjectURL(mediaStream);
-         micAudioTag.play();
-    }).catch(function(err){console.log(err.name + ": " + err.message);});
-
+    navigator.mediaDevices.getUserMedia(mediaconstraints,
+        function(mediaStream){
+            source = audioCtx.createMediaStreamSource(mediaStream);
+            source.connect(audioCtx.destination);
+        },
+        function(err){
+            console.log(err);
+        }
+    );
 });
 
 function reqListener() {    
