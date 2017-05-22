@@ -1,6 +1,7 @@
 var workingDate = null;
 var position = null;
 var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
+var analyser = null;
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -21,15 +22,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     //get microphone stream
     var mediaconstraints = {audio:true};
-    navigator.mediaDevices.getUserMedia(mediaconstraints,
-        function(mediaStream){
-            source = audioCtx.createMediaStreamSource(mediaStream);
-            source.connect(audioCtx.destination);
-        },
-        function(err){
-            console.log(err);
-        }
-    );
+    
+    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
+        source = audioCtx.createMediaStreamSource(mediaStream);
+        biquad = audioCtx.createBiquadFilter();
+        analyser = audioCtx.createAnalyser();
+        gain = audioCtx.createGain();
+
+        //configure nodes
+        biquad.type = "lowshelf";
+        biquad.frequency.value = 1000;
+        biquad.gain.value = 30;
+        gain.gain.value = .3;
+        
+        //connect nodes
+        source.connect(biquad);
+        biquad.connect(gain);
+        gain.connect(audioCtx.destination);
+
+    }).catch(function(err){console.log(err);});
 });
 
 function reqListener() {    
@@ -45,6 +56,14 @@ function getDevicesNear(lat, lon){
     dataReq.send();
 }
 
-function init(){
+function magnitudPiso(mag){
+    var piso = document.getElementById('wall0');
+    piso.pause();
+    piso.setAttribute('ocean', 'amplitude', mag);
+    piso.setAttribute('ocean', 'amplitudeVariance', mag);
+    piso.play();
+}
 
+function init(){
+    magnitudPiso(0);
 }
