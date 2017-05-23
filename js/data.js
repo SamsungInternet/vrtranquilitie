@@ -40,8 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
         biquad.connect(gain);
         gain.connect(audioCtx.destination);
 
+        //sets up the request animation frame 
+        window.requestAnimationFrame(reqAniFra);
+
     }).catch(function(err){console.log(err);});
 });
+
+function reqAniFra(){
+    //console.log(analyser);
+    reqAniFra();
+}
 
 function reqListener() {    
     let respData = JSON.parse(this.responseText);
