@@ -1,59 +1,78 @@
 var workingDate = null;
 var position = null;
+var audioCtx = null;
 var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
-var analyser = null;
+var dataArray = null;
 
 
 document.addEventListener('DOMContentLoaded', function() {
     init();
-    //get date
-    workingDate = new Date();
-    //get location
+
+    //set location
     if ('geolocation' in navigator){
-        navigator.geolocation.getCurrentPosition(function(pos){
-            position = pos;
-            getDevicesNear(pos.coords.latitude, pos.coords.longitude);
-        });
+        setWeatherInfo();
     }
     else{
-        console.log('using default position // Paris');
+        console.log('no position available - using default position // Paris');
     }
-    //set audio context
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    //get microphone stream
-    var mediaconstraints = {audio:true};
+
+    //set audio
+    setAudioInfo();
     
-    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
-        source = audioCtx.createMediaStreamSource(mediaStream);
-        biquad = audioCtx.createBiquadFilter();
-        analyser = audioCtx.createAnalyser();
-        gain = audioCtx.createGain();
-
-        //configure nodes
-        biquad.type = "lowshelf";
-        biquad.frequency.value = 1000;
-        biquad.gain.value = 30;
-        gain.gain.value = .3;
-        
-        //connect nodes
-        source.connect(biquad);
-        biquad.connect(gain);
-        gain.connect(audioCtx.destination);
-
-    }).catch(function(err){console.log(err);});
 });
 
-function reqListener() {    
-    let respData = JSON.parse(this.responseText);
-    console.log(respData);
+//sets the required environment for audio manipulation
+function setAudioInfo(){
+    //gets the audio context
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    //get microphone stream
+    var mediaconstraints = {audio:true}; //defines media device constraints    
+    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){        
+        //create audio nodes
+        source = audioCtx.createMediaStreamSource(mediaStream);
+        analyser = audioCtx.createAnalyser();
+        //configure nodes
+        analyser.fftSize = 256;
+        analyser.minDecibels = -90;
+        analyser.maxDecibels = -10;
+        analyser.smoothingTimeConstant = 0.85;
+        var bufferLength = analyser.frequencyBinCount;
+        //connect nodes
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        requestAnimationFrame(visualize);
+        
+
+    }).catch(function(err){console.log(err);});
 }
 
-function getDevicesNear(lat, lon){
-    dataReq = new XMLHttpRequest();
-    dataReq.addEventListener('load', reqListener);
-    var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&units=metric&APPID='+_APPID;
-    dataReq.open('GET', req);
-    dataReq.send();
+//gets information on nearby weather status
+function setWeatherInfo(){
+    navigator.geolocation.getCurrentPosition(function(pos){
+            dataReq = new XMLHttpRequest();
+            dataReq.addEventListener('load', function(){
+                let respData = JSON.parse(this.responseText);
+                console.log(respData);
+            });
+            var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&units=metric&APPID='+_APPID;
+            dataReq.open('GET', req);
+            dataReq.send();
+        });
+}
+
+function visualize(){
+    var c = document.getElementById('esf');
+    var bufferLength = analyser.frequencyBinCount;
+    dataArray = new Float32Array(bufferLength);
+    analyser.getFloatFrequencyData(dataArray);
+    //analyser.getFloatFrequencyData(dataArray);
+
+
+        console.log(dataArray[128]);
+
+
+    visualize();
 }
 
 function magnitudPiso(mag){
