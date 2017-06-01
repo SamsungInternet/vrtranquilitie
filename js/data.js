@@ -7,7 +7,6 @@ var dataArray = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     init();
-
     //set location
     if ('geolocation' in navigator){
         setWeatherInfo();
@@ -15,10 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     else{
         console.log('no position available - using default position // Paris');
     }
-
     //set audio
-    setAudioInfo();
-    
+    //setAudioInfo();
+    requestAnimationFrame(visualize);
 });
 
 //sets the required environment for audio manipulation
@@ -40,10 +38,7 @@ function setAudioInfo(){
         //connect nodes
         source.connect(analyser);
         analyser.connect(audioCtx.destination);
-
-        requestAnimationFrame(visualize);
         
-
     }).catch(function(err){console.log(err);});
 }
 
@@ -62,27 +57,6 @@ function setWeatherInfo(){
 }
 
 function visualize(){
-    var c = document.getElementById('esf');
-    var bufferLength = analyser.frequencyBinCount;
-    dataArray = new Float32Array(bufferLength);
-    analyser.getFloatFrequencyData(dataArray);
-    //analyser.getFloatFrequencyData(dataArray);
-
-
-        console.log(dataArray[128]);
-
-
+    
     visualize();
-}
-
-function magnitudPiso(mag){
-    var piso = document.getElementById('wall0');
-    piso.pause();
-    piso.setAttribute('ocean', 'amplitude', mag);
-    piso.setAttribute('ocean', 'amplitudeVariance', mag);
-    piso.play();
-}
-
-function init(){
-    magnitudPiso(0);
 }
