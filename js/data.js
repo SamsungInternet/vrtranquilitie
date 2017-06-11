@@ -5,13 +5,13 @@ var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
 var dataArray = null;
 var scene = document.querySelector('a-scene');
 var weather = null;
+var smartCitizenData = null;
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupSky();
     //set location
     if ('geolocation' in navigator){
-        setWeatherInfo();
+        getLocationInfo();
     }
     else{
         console.log('no position available - using default position // Paris');
@@ -25,6 +25,10 @@ var init =function(){
     setupSky();
 };
 
+var visualize = function(){
+
+};
+
 var setupSky = function(){
     scene = document.querySelector('a-scene');
     var sky = document.createElement('a-sky');
@@ -33,7 +37,7 @@ var setupSky = function(){
 };
 
 //sets the required environment for audio manipulation
-function setAudioInfo(){
+function setAudioEnvironment(){
     //gets the audio context
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     //get microphone stream
@@ -55,26 +59,42 @@ function setAudioInfo(){
     }).catch(function(err){console.log(err);});
 }
 
-//gets information on nearby weather status
-function setWeatherInfo(){
+//gets gets the location information
+var getLocationInfo = function(){
     navigator.geolocation.getCurrentPosition(function(pos){
-            dataReq = new XMLHttpRequest();
-            dataReq.addEventListener('load', function(){
-                let respData = JSON.parse(this.responseText);
+        position = pos;
+        getWeatherInfo();
+        getSmartCitizenInfo();
+        init();
+    });
+};
 
-                var sky = document.querySelector('a-sky');
-                weather = respData;
-                sky.setAttribute('color', 'hsl('+Math.floor(pos.coords.longitude+180)+', '+Math.floor(pos.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)');
-            });
-            var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&units=metric&APPID='+_APPID;
-            dataReq.open('GET', req);
-            dataReq.send();
+//gets the information form the openweathermap api for a location
+var getWeatherInfo = function(){
+    dataReq = new XMLHttpRequest();
+    dataReq.addEventListener('load', function(){
+        let respData = JSON.parse(this.responseText);
+        var sky = document.querySelector('a-sky');
+        weather = respData;
+        //sky.setAttribute('color', 'hsl('+Math.floor(pos.coords.longitude+180)+', '+Math.floor(pos.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)');
+    });
+    var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&units=metric&APPID='+_APPID;
+    dataReq.open('GET', req);
+    dataReq.send();
+};
+
+//gets the information form smartcitizen kits near a location
+var getSmartCitizenInfo = function(){
+    dataReq = new XMLHttpRequest();
+        dataReq.addEventListener('load', function(){
+            let respData = JSON.parse(this.responseText);
+            smartCitizenData = respData;
         });
-}
+        var req= 'https://api.smartcitizen.me/v0/devices/?near='+position.coords.latitude+','+position.coords.longitude;
+        dataReq.open('GET', req);
+        dataReq.send();
+};
 
-function visualize(){
-
-}
 
 function shadeColor2(color, percent) {   
     var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
@@ -92,4 +112,22 @@ function magnitudPiso(mag){
      piso.setAttribute('ocean', 'amplitude', mag);
      piso.setAttribute('ocean', 'amplitudeVariance', mag);
      piso.play();
- }
+}
+
+//gets the decibels in the nearest smartcitizen kit
+var getDecibels = function(){
+    var db = -1;
+    var foundClosest = false;
+    for (i = 0; i < smartCitizenData.length; i++){
+        if(smartCitizenData[i].state == 'has_published' && !foundClosest){
+            for(j = 0; j < smartCitizenData[i].data.sensors.length; j++){
+                if(smartCitizenData[i].data.sensors[j].unit == 'dB'){
+                    db = smartCitizenData[i].data.sensors[j].value;
+                    foundClosest = true;
+                    break;
+                }else{continue;}
+            }
+        }else{continue;}
+    }
+    return db;
+};
