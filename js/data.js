@@ -6,6 +6,7 @@ var dataArray = null;
 var scene = document.querySelector('a-scene');
 var weather = null;
 var smartCitizenData = null;
+var environmentColor = '#FFFFFF';
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -76,7 +77,7 @@ var getWeatherInfo = function(){
         let respData = JSON.parse(this.responseText);
         var sky = document.querySelector('a-sky');
         weather = respData;
-        //sky.setAttribute('color', 'hsl('+Math.floor(pos.coords.longitude+180)+', '+Math.floor(pos.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)');
+        environmentColor = 'hsl('+Math.floor(position.coords.longitude+180)+', '+Math.floor(position.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)';
     });
     var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&units=metric&APPID='+_APPID;
     dataReq.open('GET', req);
@@ -130,4 +131,40 @@ var getDecibels = function(){
         }else{continue;}
     }
     return db;
+};
+
+//gets the decibels in the nearest smartcitizen kit
+var getLocalDecibels = function(){
+    var db = -1;
+    var cant = 0;
+    var foundClosest = false;
+    for (i = 0; i < smartCitizenData.length; i++){
+        if(smartCitizenData[i].state == 'has_published'){
+            for(j = 0; j < smartCitizenData[i].data.sensors.length; j++){
+                if(smartCitizenData[i].data.sensors[j].unit == 'dB'){
+                    db += smartCitizenData[i].data.sensors[j].value;
+                    cant++;
+                    foundClosest = true;
+                    break;
+                }else{continue;}
+            }
+        }else{continue;}
+    }
+    return db;
+};
+
+var createShapes = function(num, r){
+    var angle = (360/num)+1;
+    console.log(angle);
+    var scene = document.querySelector('a-scene');
+    for(i = 0; i < num; i++){
+        var x = r*Math.cos(angle*i);
+        var y = 1.5;
+        var z = r*Math.sin(angle*i);
+        var s = document.createElement('a-sphere');
+        s.setAttribute('radius', '.5');
+        s.setAttribute('color', environmentColor);
+        s.setAttribute('position', x +' ' + y + ' ' + z);
+        scene.appendChild(s);
+    }
 };
