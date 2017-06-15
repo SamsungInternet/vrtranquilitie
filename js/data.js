@@ -35,10 +35,10 @@ var setupEnvironment = function(){
 
 var visualize = function(){
     sampleFrequency();
-    var sample = document.getElementById('sample');
-    sample.setAttribute('radius', myDataArray[64]/60);
-   
-
+    var sample = document.getElementsByTagName('a-sphere');
+    for(i =0 ; i < sample.length; i++){
+        sample[i].setAttribute('radius', myDataArray[64]/100);
+    }
     window.requestAnimationFrame(visualize);
 };
 
