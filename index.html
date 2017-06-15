@@ -20,10 +20,11 @@
                 <audio id="siren" src="audio/police_siren.mp3"></audio>
                 <audio id="ad" src="audio/polish_ad.mp3"></audio>
                 <audio id="horn" src="audio/car_horn.wav"></audio>
-                <audio id="street" src="audio/street_walking.mp3"></audio>
+                <audio id="street" src="audio/street_walking.mp3" ></audio>
             </a-assets>
             <a-entity position="0 0 0" particle-system="preset: dust"></a-entity>
-            <a-sound src="#street" loop="true" autoplay="true"></a-sound>
+            <!--<a-sound src="#street" loop="true" autoplay="true" position="0 -1 0"></a-sound>-->
+            <a-sphere radius="3" position="0 0 -10" color="#FF0064" ></a-sphere>
         </a-scene>
     </body>
 </html>

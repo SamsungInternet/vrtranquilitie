@@ -1,38 +1,43 @@
 var workingDate = null;
-var pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
+var pos = null;
 var audioCtx = null;
 var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
-var dataArray = null;
+var myDataArray = null;
 var scene = document.querySelector('a-scene');
 var weather = null;
 var smartCitizenData = null;
 var environmentColor = '#FFFFFF';
+var analyser = null;
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 
 document.addEventListener('DOMContentLoaded', function() {
     //set location
     if ('geolocation' in navigator){
-        getLocationInfo();
+        navigator.geolocation.getCurrentPosition(function(ppos){
+            pos = ppos;
+            setupEnvironment();
+        }, function(error){pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};});
     }
     else{
-        console.log('no position available - using default position // Paris');
-        getWeatherInfo();
-        getSmartCitizenInfo();
-        init();
+       pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
+       setupEnvironment();
     }
-    //set audio
-    //setAudioInfo();
-    requestAnimationFrame(visualize);
 });
 
-var init =function(){
+var setupEnvironment = function(){
+    getWeatherInfo();
+    getSmartCitizenInfo();
+    setAudio();
     setupSky();
-    createSpiral(150);
+    createSpiral(200);
+    requestAnimationFrame(visualize);
 };
 
 var visualize = function(){
 
 };
+
 
 var setupSky = function(){
     scene = document.querySelector('a-scene');
@@ -42,36 +47,23 @@ var setupSky = function(){
 };
 
 //sets the required environment for audio manipulation
-function setAudioEnvironment(){
-    //gets the audio context
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    //get microphone stream
-    var mediaconstraints = {audio:true}; //defines media device constraints    
-    navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){        
-        //create audio nodes
-        source = audioCtx.createMediaStreamSource(mediaStream);
-        analyser = audioCtx.createAnalyser();
-        //configure nodes
-        analyser.fftSize = 256;
-        analyser.minDecibels = -90;
-        analyser.maxDecibels = -10;
-        analyser.smoothingTimeConstant = 0.85;
-        var bufferLength = analyser.frequencyBinCount;
-        //connect nodes
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        
-    }).catch(function(err){console.log(err);});
+function setAudio(){
+    //create audio nodes
+    ambientSoundTag = document.querySelector('#street'); 
+    ambientSoundTag.play();
+    source = audioCtx.createMediaElementSource(ambientSoundTag);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    myDataArray = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(myDataArray); 
+    //connect nodes
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
 }
 
-//gets gets the location information
-var getLocationInfo = function(){
-    navigator.geolocation.getCurrentPosition(function(ppos){
-        // pos = ppos;
-        getWeatherInfo();
-        getSmartCitizenInfo();
-        init();
-    });
+var sampleFrequency = function(){
+    myDataArray = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(myDataArray);
 };
 
 //gets the information form the openweathermap api for a location
@@ -111,50 +103,27 @@ function blendColors(c0, c1, p) {
     return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
 }
 
-function magnitudPiso(mag){ 
-     var piso = document.getElementById('wall0');
-     piso.pause();
-     piso.setAttribute('ocean', 'amplitude', mag);
-     piso.setAttribute('ocean', 'amplitudeVariance', mag);
-     piso.play();
-}
-
-//gets the decibels in the nearest smartcitizen kit
-var getDecibels = function(){
-    var db = -1;
-    var foundClosest = false;
-    for (i = 0; i < smartCitizenData.length; i++){
-        if(smartCitizenData[i].state == 'has_published' && !foundClosest){
-            for(j = 0; j < smartCitizenData[i].data.sensors.length; j++){
-                if(smartCitizenData[i].data.sensors[j].unit == 'dB'){
-                    db = smartCitizenData[i].data.sensors[j].value;
-                    foundClosest = true;
-                    break;
-                }else{continue;}
-            }
-        }else{continue;}
-    }
-    return db;
-};
-
-//gets the decibels in the nearest smartcitizen kit
-var getLocalDecibels = function(){
-    var db = -1;
+//gets the decibels in the single nearest smartcitizen kit or in the area
+var getLocalDecibels = function(single){
+    var db = 0;
     var cant = 0;
-    var foundClosest = false;
+    var hasfoundDecibel = false;
     for (i = 0; i < smartCitizenData.length; i++){
-        if(smartCitizenData[i].state == 'has_published'){
-            for(j = 0; j < smartCitizenData[i].data.sensors.length; j++){
-                if(smartCitizenData[i].data.sensors[j].unit == 'dB'){
-                    db += smartCitizenData[i].data.sensors[j].value;
-                    cant++;
-                    foundClosest = true;
-                    break;
-                }else{continue;}
-            }
-        }else{continue;}
+        if(!hasfoundDecibel || !single){
+            if(smartCitizenData[i].state == 'has_published'){
+                for(j = 0; j < smartCitizenData[i].data.sensors.length; j++){
+                    if(smartCitizenData[i].data.sensors[j].unit == 'dB'){
+                        db += smartCitizenData[i].data.sensors[j].value;
+                        cant++;
+                        hasfoundDecibel = true;
+                        break;
+                    }else{continue;}
+                }
+            }else{continue;}
+        }else{break;}
     }
-    return db;
+    console.log(cant);
+    return db/cant;
 };
 
 var createShapes = function(num, r){
