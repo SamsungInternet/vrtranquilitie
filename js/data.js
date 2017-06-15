@@ -36,8 +36,8 @@ var setupEnvironment = function(){
 var visualize = function(){
     sampleFrequency();
     var sample = document.getElementById('sample');
-    sample.setAttribute('radius', myDataArray[64]/30);
-
+    sample.setAttribute('radius', myDataArray[64]/60);
+   
 
     window.requestAnimationFrame(visualize);
 };
