@@ -1,5 +1,5 @@
 var workingDate = null;
-var position = null;
+var pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
 var audioCtx = null;
 var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
 var dataArray = null;
@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     else{
         console.log('no position available - using default position // Paris');
+        getWeatherInfo();
+        getSmartCitizenInfo();
+        init();
     }
     //set audio
     //setAudioInfo();
@@ -63,8 +66,8 @@ function setAudioEnvironment(){
 
 //gets gets the location information
 var getLocationInfo = function(){
-    navigator.geolocation.getCurrentPosition(function(pos){
-        position = pos;
+    navigator.geolocation.getCurrentPosition(function(ppos){
+        // pos = ppos;
         getWeatherInfo();
         getSmartCitizenInfo();
         init();
@@ -78,9 +81,9 @@ var getWeatherInfo = function(){
         let respData = JSON.parse(this.responseText);
         var sky = document.querySelector('a-sky');
         weather = respData;
-        environmentColor = 'hsl('+Math.floor(position.coords.longitude+180)+', '+Math.floor(position.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)';
+        environmentColor = 'hsl('+Math.floor(pos.coords.longitude+180)+', '+Math.floor(pos.coords.latitude+90)+'%, '+Math.ceil(110-weather.main.temp)+'%)';
     });
-    var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&units=metric&APPID='+_APPID;
+    var req = ' http://api.openweathermap.org/data/2.5/weather?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&units=metric&APPID='+_APPID;
     dataReq.open('GET', req);
     dataReq.send();
 };
@@ -92,7 +95,7 @@ var getSmartCitizenInfo = function(){
             let respData = JSON.parse(this.responseText);
             smartCitizenData = respData;
         });
-        var req= 'https://api.smartcitizen.me/v0/devices/?near='+position.coords.latitude+','+position.coords.longitude;
+        var req= 'https://api.smartcitizen.me/v0/devices/?near='+pos.coords.latitude+','+pos.coords.longitude;
         dataReq.open('GET', req);
         dataReq.send();
 };
