@@ -18,10 +18,14 @@
         <a-scene>
             <a-assets>
                 <img id="sky" src="imgs/around.jpg" alt="">
-                <audio id="street" src="audio/car_horn.wav"></audio>
+                <audio id="hold" src="audio/please_hold.mp3"></audio>
+                <audio id="siren" src="audio/police_siren.mp3"></audio>
+                <audio id="ad" src="audio/polish_ad.mp3"></audio>
+                <audio id="horn" src="audio/car_horn.mp3"></audio>
+                <audio id="street" src="audio/street_walking.mp3"></audio>
             </a-assets>
             <a-entity position="0 0 0" particle-system="preset: dust"></a-entity>
-            <a-sound src="#street" loop="true" autoplay="false"></a-sound>
+            <a-sound src="#street" loop="true" autoplay="true"></a-sound>
         </a-scene>
     </body>
 </html>
