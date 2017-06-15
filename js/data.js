@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 var init =function(){
     setupSky();
+    createSpiral(150);
 };
 
 var visualize = function(){
@@ -167,4 +168,32 @@ var createShapes = function(num, r){
         s.setAttribute('position', x +' ' + y + ' ' + z);
         scene.appendChild(s);
     }
+};
+
+var createSpiral = function(num){
+    var angle = (360/num)+1;
+    var scene = document.querySelector('a-scene');
+    var y = 10;
+    var r = 0;
+    var spiral = document.createElement('a-entity');
+    var anim = document.createElement('a-animation');
+    anim.setAttribute('attribute','rotation');
+    anim.setAttribute('dur','1000000');
+    anim.setAttribute('fill','forwards');
+    anim.setAttribute('to','0 360 0');
+    anim.setAttribute('repeat','indefinite');
+    anim.setAttribute('easing','linear');
+    spiral.appendChild(anim);
+    for(i = 0; i < num; i++){
+        var x = r*Math.cos(angle*i);
+        var z = r*Math.sin(angle*i);
+        var s = document.createElement('a-sphere');
+        s.setAttribute('radius', '.5');
+        s.setAttribute('color', environmentColor);
+        s.setAttribute('position', x +' ' + y + ' ' + z);
+        spiral.appendChild(s);
+        y-=0.1;
+        r+=0.1;
+    }
+    scene.appendChild(spiral);
 };
