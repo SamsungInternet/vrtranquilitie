@@ -27,17 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
 var setupEnvironment = function(){
     getWeatherInfo();
     getSmartCitizenInfo();
-    setAudio();
+    setAudio(false);
     setupSky();
     createSpiral(128);
+
     window.requestAnimationFrame(visualize);
 };
 
 var visualize = function(){
     sampleFrequency();
     var sample = document.getElementsByTagName('a-sphere');
-    for(i =0 ; i < sample.length; i++){
-        sample[i].setAttribute('radius', myDataArray[64]/100);
+    for(i = 0 ; i < 128; i++){
+        sample[i].setAttribute('radius', myDataArray[128]/100);
     }
     window.requestAnimationFrame(visualize);
 };
@@ -51,19 +52,38 @@ var setupSky = function(){
 };
 
 //sets the required environment for audio manipulation
-function setAudio(){
+var setAudio = function(useMic){
     //create audio nodes
-    ambientSoundTag = document.querySelector('#street'); 
-    ambientSoundTag.play();
-    source = audioCtx.createMediaElementSource(ambientSoundTag);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    myDataArray = new Float32Array(analyser.frequencyBinCount);
-    analyser.getFloatFrequencyData(myDataArray); 
-    //connect nodes
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-}
+    source = null;
+    if(useMic){
+        //get microphone stream 
+        var mediaconstraints = {audio:true}; //defines media device constraints    
+        navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
+        //create audio nodes
+        source = audioCtx.createMediaStreamSource(mediaStream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;
+        myDataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(myDataArray); 
+        //connect nodes
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        }).catch(function(err){console.log(err);}); 
+
+    }
+    else{
+        ambientSoundTag = document.querySelector('#street'); 
+        ambientSoundTag.play();
+        source = audioCtx.createMediaElementSource(ambientSoundTag);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;
+        myDataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(myDataArray); 
+        //connect nodes
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+    }    
+};
 
 var sampleFrequency = function(){
     myDataArray = new Float32Array(analyser.frequencyBinCount);
@@ -166,16 +186,19 @@ var createSpiral = function(num){
         var z = r*Math.sin(angle*i);
         var s = document.createElement('a-sphere');
         s.setAttribute('radius', '.5');
+        s.setAttribute('material', 'opacity', .6);
         s.setAttribute('id', 's'+i);
         s.setAttribute('color', environmentColor);
         s.setAttribute('position', x +' ' + y + ' ' + z);
         
         //sound
-        var noise = document.createElement('a-sound');
-        noise.setAttribute('src', '#siren');
-        noise.setAttribute('loop', 'false');
-        noise.setAttribute('autoplay', 'true');
-        //s.appendChild(noise);
+        if(i%20 == 0){
+            var noise = document.createElement('a-sound');
+            noise.setAttribute('src', '#s'+getRandomArbitrary(1, 6));
+            noise.setAttribute('loop', 'false');
+            noise.setAttribute('autoplay', 'true');
+            s.appendChild(noise);
+        }
         //next
         spiral.appendChild(s);
         y-=0.1;
@@ -183,3 +206,7 @@ var createSpiral = function(num){
     }
     scene.appendChild(spiral);
 };
+
+function getRandomArbitrary(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}

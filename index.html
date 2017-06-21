@@ -8,23 +8,21 @@
         <link href="css/style.css" rel="stylesheet">
         <script src="swreg.js"></script>
         <script src="js/aframe.min.js"></script>
-        <script src="js/aframe-particle-system-component.min.js"></script>
         <script src="js/data.js"></script>
     </head>
     <body>
         <audio id="micStream"></audio>
         <a-scene>
             <a-assets>
-                <img id="sky" src="imgs/around.jpg" alt="">
-                <audio id="hold" src="audio/please_hold.mp3"></audio>
-                <audio id="siren" src="audio/police_siren.mp3"></audio>
-                <audio id="ad" src="audio/polish_ad.mp3"></audio>
-                <audio id="horn" src="audio/car_horn.wav"></audio>
+                <img id="sky" src="imgs/sg.jpg" alt="">
+                <audio id="s1" src="audio/please_hold.mp3" loop="true"></audio>
+                <audio id="s2" src="audio/police_siren.mp3" loop="true"></audio>
+                <audio id="s3" src="audio/polish_ad.mp3" loop="true"></audio>
+                <audio id="s4" src="audio/car_horn.wav" loop="true"></audio>
                 <audio id="street" src="audio/street_walking.mp3" loop="true" ></audio>
             </a-assets>
-            <a-entity position="0 0 0" particle-system="preset: dust"></a-entity>
-            <!--<a-sound src="#street" loop="true" autoplay="true" position="0 -1 0"></a-sound>-->
             <a-sphere id="sample" radius="3" position="0 10 0" color="#FF0064" ></a-sphere>
+            <a-plane id="floor" rotation="-90 0 0" position="0 -1 0" height="100" width="100"></a-plane>
         </a-scene>
     </body>
 </html>
