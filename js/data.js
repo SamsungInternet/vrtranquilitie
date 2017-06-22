@@ -9,7 +9,8 @@ var smartCitizenData = null;
 var environmentColor = '#FFFFFF';
 var analyser = null;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var speakerRepScale = 1;
+var speakerRepScale = 15;
+var sample = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     //set location
@@ -31,16 +32,16 @@ var setupEnvironment = function(){
     setAudio(false);
     setupSky();
     createSpiral(100);
+    sample = document.getElementsByTagName('a-sphere');
 
     window.requestAnimationFrame(visualize);
 };
 
 var visualize = function(){
     sampleFrequency();
-    var sample = document.getElementsByTagName('a-sphere');
-    for(i = 0 ; i < 128; i++){
-        //sample[i].setAttribute('radius', myDataArray[128]/speakerRepScale);
-        console.log(smartCitizenData[128]);
+    for(i = 0 ; i < sample.length; i++){
+        if(myDataArray[64] != Number.NEGATIVE_INFINITY)
+        sample[i].setAttribute('radius', myDataArray[64]/speakerRepScale);
     }
     window.requestAnimationFrame(visualize);
 };
