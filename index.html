@@ -15,14 +15,17 @@
         <a-scene>
             <a-assets>
                 <img id="sky" src="imgs/sg.jpg" alt="">
-                <audio id="s1" src="audio/please_hold.mp3" loop="true"></audio>
-                <audio id="s2" src="audio/police_siren.mp3" loop="true"></audio>
-                <audio id="s3" src="audio/polish_ad.mp3" loop="true"></audio>
-                <audio id="s4" src="audio/car_horn.wav" loop="true"></audio>
-                <audio id="street" src="audio/street_walking.mp3" loop="true" ></audio>
+                <img id="splash" src="imgs/splash.png" alt="">
+                <audio id="s1" src="audio/please_hold.mp3" loop="true" autoplay="false"></audio>
+                <audio id="s2" src="audio/police_siren.mp3" loop="true" autoplay="false"></audio>
+                <audio id="s3" src="audio/polish_ad.mp3" loop="true" autoplay="false"></audio>
+                <audio id="s4" src="audio/car_horn.wav" loop="true" autoplay="false"></audio>
+                <audio id="street" src="audio/street_walking.mp3" loop="true" autoplay="false"></audio>
             </a-assets>
-            <a-sphere id="sample" radius="3" position="0 10 0" color="#FF0064" ></a-sphere>
+            <a-sphere id="sample" radius="3" position="0 10 0" color="#8E001C" ></a-sphere>
             <a-plane id="floor" rotation="-90 0 0" position="0 -10 0" height="200" width="200" material="opacity:.8"></a-plane>
+            
+
         </a-scene>
     </body>
 </html>

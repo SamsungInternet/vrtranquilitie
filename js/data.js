@@ -26,17 +26,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+//sets up the environment for vr
 var setupEnvironment = function(){
-    getWeatherInfo();
+    //getWeatherInfo();
     getSmartCitizenInfo();
     setAudio(false);
     setupSky();
     createSpiral(95);
+    createSplash();
     sample = document.getElementsByTagName('a-sphere');
-
-    window.requestAnimationFrame(visualize);
 };
 
+//creates the splash screen to start the VR experience
+var createSplash = function(){
+    splash = document.createElement('a-image');
+    splash.setAttribute('src', '#splash');
+    splash.setAttribute('width', 2.2);
+    splash.setAttribute('height', 4);
+    splash.setAttribute('transparent', 'true');
+    splash.setAttribute('position', '0 2 -3');
+    splash.addEventListener("click", startVRExp);
+    document.querySelector('a-scene').appendChild(splash);
+};
+
+//starts the asnimation frame loop
+var startVRExp = function(){
+    window.requestAnimationFrame(visualize);
+    //startSpiralSounds();
+    ambientSoundTag = document.querySelector('#street'); 
+    //ambientSoundTag.play();
+};
+
+//visual loop for vr
 var visualize = function(){
     sampleFrequency();
     for(i = 0 ; i < sample.length; i++){
@@ -46,7 +67,7 @@ var visualize = function(){
     window.requestAnimationFrame(visualize);
 };
 
-
+//sets up the initial skybox
 var setupSky = function(){
     scene = document.querySelector('a-scene');
     var sky = document.createElement('a-sky');
@@ -75,8 +96,6 @@ var setAudio = function(useMic){
 
     }
     else{
-        ambientSoundTag = document.querySelector('#street'); 
-        ambientSoundTag.play();
         source = audioCtx.createMediaElementSource(ambientSoundTag);
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 1024;
@@ -88,6 +107,7 @@ var setAudio = function(useMic){
     }    
 };
 
+//samples the data from the audio source
 var sampleFrequency = function(){
     myDataArray = new Float32Array(analyser.frequencyBinCount);
     analyser.getFloatFrequencyData(myDataArray);
@@ -119,12 +139,13 @@ var getSmartCitizenInfo = function(){
         dataReq.send();
 };
 
-
+//lightens/darkens a shade of color
 function shadeColor2(color, percent) {   
     var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
     return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
 }
 
+//blends two colors
 function blendColors(c0, c1, p) {
     var f=parseInt(c0.slice(1),16),t=parseInt(c1.slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF,R2=t>>16,G2=t>>8&0x00FF,B2=t&0x0000FF;
     return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
@@ -153,6 +174,7 @@ var getLocalDecibels = function(single){
     return db/cant;
 };
 
+//creates a ring of spheres
 var createShapes = function(num, r){
     var angle = (360/num)+1;
     console.log(angle);
@@ -169,6 +191,7 @@ var createShapes = function(num, r){
     }
 };
 
+//creates the spiral shape
 var createSpiral = function(num){
     var angle = (360/num)+1;
     var scene = document.querySelector('a-scene');
@@ -198,8 +221,8 @@ var createSpiral = function(num){
         if(i%20 == 0){
             var noise = document.createElement('a-sound');
             noise.setAttribute('src', '#s'+getRandomArbitrary(1, 6));
-            noise.setAttribute('loop', 'false');
-            noise.setAttribute('autoplay', 'true');
+            noise.setAttribute('loop', 'true');
+            noise.setAttribute('autoplay', 'false');
             s.appendChild(noise);
         }
         //next
@@ -210,6 +233,7 @@ var createSpiral = function(num){
     scene.appendChild(spiral);
 };
 
+//gets a random number in a range
 function getRandomArbitrary(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
