@@ -31,7 +31,7 @@ var setupEnvironment = function(){
     getSmartCitizenInfo();
     setAudio(false);
     setupSky();
-    createSpiral(100);
+    createSpiral(95);
     sample = document.getElementsByTagName('a-sphere');
 
     window.requestAnimationFrame(visualize);
