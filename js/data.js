@@ -11,6 +11,7 @@ var analyser = null;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var speakerRepScale = 15;
 var sample = null;
+var ambientSoundTag = document.querySelector('#street');
 
 document.addEventListener('DOMContentLoaded', function() {
     //set location
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
        pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
        setupEnvironment();
     }
+    ambientSoundTag = document.querySelector('#street');
 });
 
 //sets up the environment for vr
@@ -52,8 +54,7 @@ var createSplash = function(){
 //starts the asnimation frame loop
 var startVRExp = function(){
     window.requestAnimationFrame(visualize);
-    //startSpiralSounds();
-    ambientSoundTag = document.querySelector('#street'); 
+    //startSpiralSounds(); 
     //ambientSoundTag.play();
 };
 
