@@ -12,6 +12,7 @@ var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var speakerRepScale = 15;
 var sample = null;
 var ambientSoundTag = document.querySelector('#street');
+var usingMic = false; 
 
 document.addEventListener('DOMContentLoaded', function() {
     //set location
@@ -30,9 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //sets up the environment for vr
 var setupEnvironment = function(){
-    //getWeatherInfo();
     getSmartCitizenInfo();
-    setAudio(false);
+    //setAudio(false);
     setupSky();
     createSpiral(95);
     createSplash();
@@ -46,16 +46,41 @@ var createSplash = function(){
     splash.setAttribute('width', 2.2);
     splash.setAttribute('height', 4);
     splash.setAttribute('transparent', 'true');
-    splash.setAttribute('position', '0 2 -3');
-    splash.addEventListener("click", startVRExp);
+    splash.setAttribute('position', '0.1 2 -3');
     document.querySelector('a-scene').appendChild(splash);
+
+    btnGPS = document.createElement('a-image');
+    btnGPS.setAttribute('src', '#gps');
+    btnGPS.setAttribute('width', .7);
+    btnGPS.setAttribute('height', .7);
+    btnGPS.setAttribute('transparent', 'true');
+    btnGPS.setAttribute('position', '0.45 1.6 -2.8');
+    btnGPS.addEventListener("click", startVRExp(false));
+
+    btnMic = document.createElement('a-image');
+    btnMic.setAttribute('src', '#mic');
+    btnMic.setAttribute('width', .7);
+    btnMic.setAttribute('height', .7);
+    btnMic.setAttribute('transparent', 'true');
+    btnMic.setAttribute('position', '-0.45 1.6 -2.8');
+    btnMic.addEventListener("click", startVRExp(true));
+
+    document.querySelector('a-scene').appendChild(btnGPS);
+    document.querySelector('a-scene').appendChild(btnMic);
+
 };
 
 //starts the asnimation frame loop
-var startVRExp = function(){
-    window.requestAnimationFrame(visualize);
-    //startSpiralSounds(); 
-    //ambientSoundTag.play();
+var startVRExp = function(useMic){
+    // setAudio(useMic);
+    // startSpiralSounds(useMic); 
+    // window.requestAnimationFrame(visualize);
+    console.log('mic'+useMic);
+};
+
+var startSpiralSounds = function(){
+    if(!usingMic)
+        ambientSoundTag.play();
 };
 
 //visual loop for vr
@@ -80,6 +105,7 @@ var setupSky = function(){
 var setAudio = function(useMic){
     //create audio nodes
     source = null;
+    usingMic = useMic;
     if(useMic){
         //get microphone stream 
         var mediaconstraints = {audio:true}; //defines media device constraints    
