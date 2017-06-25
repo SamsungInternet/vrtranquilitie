@@ -41,6 +41,8 @@ var setupEnvironment = function(){
 
 //creates the splash screen to start the VR experience
 var createSplash = function(){
+    
+
     splash = document.createElement('a-image');
     splash.setAttribute('src', '#splash');
     splash.setAttribute('width', 2.2);
@@ -50,32 +52,37 @@ var createSplash = function(){
     document.querySelector('a-scene').appendChild(splash);
 
     btnGPS = document.createElement('a-image');
+    btnGPS.setAttribute('id', 'gpsImage');
     btnGPS.setAttribute('src', '#gps');
     btnGPS.setAttribute('width', .7);
     btnGPS.setAttribute('height', .7);
     btnGPS.setAttribute('transparent', 'true');
     btnGPS.setAttribute('position', '0.45 1.6 -2.8');
-    btnGPS.addEventListener("click", startVRExp(false));
+    btnGPS.emit("btnTap", false, true);
+    btnGPS.setAttribute('onclick', 'startVRExp(false)');
 
     btnMic = document.createElement('a-image');
+    btnMic.setAttribute('id', 'micImage');
     btnMic.setAttribute('src', '#mic');
     btnMic.setAttribute('width', .7);
     btnMic.setAttribute('height', .7);
     btnMic.setAttribute('transparent', 'true');
     btnMic.setAttribute('position', '-0.45 1.6 -2.8');
-    btnMic.addEventListener("click", startVRExp(true));
-
+    btnMic.setAttribute('onclick', 'startVRExp(true)');
+    
     document.querySelector('a-scene').appendChild(btnGPS);
     document.querySelector('a-scene').appendChild(btnMic);
+
+    document.querySelector('#micImage').addEventListener('click', function(){alert('mic')});
+    document.querySelector('#gpsImage').addEventListener('click', function(){alert('gps')});
 
 };
 
 //starts the asnimation frame loop
 var startVRExp = function(useMic){
-    // setAudio(useMic);
-    // startSpiralSounds(useMic); 
-    // window.requestAnimationFrame(visualize);
-    console.log('mic'+useMic);
+    setAudio(useMic);
+    startSpiralSounds(useMic); 
+    window.requestAnimationFrame(visualize);
 };
 
 var startSpiralSounds = function(){
