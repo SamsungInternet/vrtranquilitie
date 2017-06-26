@@ -69,7 +69,7 @@ var setupEnvironment = function(){
 };
 
 var getAmplifierLevel = function(){
-    ampLevel = (getLocalDecibels()/85).toPrecision(3); //85dB is considered the limit for noise in 8h exposure
+    ampLevel = parseFloat((getLocalDecibels()/85).toPrecision(3)); //85dB is considered the limit for noise in 8h exposure
     console.log('amp level: '+ ampLevel);
 };
 
@@ -130,7 +130,7 @@ var visualize = function(){
     
     for(i = 0 ; i < sample.length; i++){
         if(myDataArray[64] != Number.NEGATIVE_INFINITY)
-        sample[i].setAttribute('radius', Math.abs(myDataArray[64]/speakerRepScale)/*amplifierLevel*/);
+        sample[i].setAttribute('radius', Math.abs(myDataArray[64]/speakerRepScale)*ampLevel);
     }
     window.requestAnimationFrame(visualize);
 };
