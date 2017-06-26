@@ -13,6 +13,7 @@ var speakerRepScale = 15;
 var sample = null;
 var ambientSoundTag = document.querySelector('#street');
 var usingMic = false; 
+var ampLevel = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     //set location
@@ -32,11 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
 //sets up the environment for vr
 var setupEnvironment = function(){
     getSmartCitizenInfo();
-    //setAudio(false);
     setupSky();
     createSpiral(95);
     createSplash();
     sample = document.getElementsByTagName('a-sphere');
+};
+
+var getAmplifierLevel = function(){
+    ampLevel = (getLocalDecibels()/85).toPrecision(3); //85dB is considered the limit for noise in 8h exposure
+    console.log('amp level: '+ ampLevel);
 };
 
 //creates the splash screen to start the VR experience
@@ -59,7 +64,7 @@ var createSplash = function(){
     btnGPS.setAttribute('transparent', 'true');
     btnGPS.setAttribute('position', '0.45 1.6 -2.8');
     btnGPS.emit("btnTap", false, true);
-    btnGPS.setAttribute('onclick', 'startVRExp(false)');
+    //btnGPS.setAttribute('onclick', 'startVRExp(false)');
 
     btnMic = document.createElement('a-image');
     btnMic.setAttribute('id', 'micImage');
@@ -68,13 +73,13 @@ var createSplash = function(){
     btnMic.setAttribute('height', .7);
     btnMic.setAttribute('transparent', 'true');
     btnMic.setAttribute('position', '-0.45 1.6 -2.8');
-    btnMic.setAttribute('onclick', 'startVRExp(true)');
+    //btnMic.setAttribute('onclick', 'startVRExp(true)');
     
     document.querySelector('a-scene').appendChild(btnGPS);
     document.querySelector('a-scene').appendChild(btnMic);
 
-    document.querySelector('#micImage').addEventListener('click', function(){alert('mic')});
-    document.querySelector('#gpsImage').addEventListener('click', function(){alert('gps')});
+    document.querySelector('#micImage').addEventListener('click', function(){startVRExp(true)});
+    document.querySelector('#gpsImage').addEventListener('click', function(){startVRExp(false)});
 
 };
 
@@ -93,9 +98,10 @@ var startSpiralSounds = function(){
 //visual loop for vr
 var visualize = function(){
     sampleFrequency();
+    
     for(i = 0 ; i < sample.length; i++){
         if(myDataArray[64] != Number.NEGATIVE_INFINITY)
-        sample[i].setAttribute('radius', myDataArray[64]/speakerRepScale);
+        sample[i].setAttribute('radius', Math.abs(myDataArray[64]/speakerRepScale)/*amplifierLevel*/);
     }
     window.requestAnimationFrame(visualize);
 };
@@ -121,10 +127,13 @@ var setAudio = function(useMic){
         source = audioCtx.createMediaStreamSource(mediaStream);
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 1024;
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = ampLevel;
         myDataArray = new Float32Array(analyser.frequencyBinCount);
         analyser.getFloatFrequencyData(myDataArray); 
         //connect nodes
-        source.connect(analyser);
+        source.connect(gainNode);
+        gainNode.connect(analyser);
         analyser.connect(audioCtx.destination);
         }).catch(function(err){console.log(err);}); 
 
@@ -133,10 +142,13 @@ var setAudio = function(useMic){
         source = audioCtx.createMediaElementSource(ambientSoundTag);
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 1024;
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = ampLevel;
         myDataArray = new Float32Array(analyser.frequencyBinCount);
         analyser.getFloatFrequencyData(myDataArray); 
         //connect nodes
-        source.connect(analyser);
+        source.connect(gainNode);
+        gainNode.connect(analyser);
         analyser.connect(audioCtx.destination);
     }    
 };
@@ -167,6 +179,7 @@ var getSmartCitizenInfo = function(){
         dataReq.addEventListener('load', function(){
             let respData = JSON.parse(this.responseText);
             smartCitizenData = respData;
+            amplifierLevel = getAmplifierLevel();
         });
         var req= 'https://api.smartcitizen.me/v0/devices/?near='+pos.coords.latitude+','+pos.coords.longitude;
         dataReq.open('GET', req);
@@ -204,8 +217,8 @@ var getLocalDecibels = function(single){
             }else{continue;}
         }else{break;}
     }
-    console.log(cant);
-    return db/cant;
+    console.log("local dB value: "+(db/cant).toPrecision(3));
+    return (db/cant).toPrecision(3);
 };
 
 //creates a ring of spheres
@@ -246,7 +259,7 @@ var createSpiral = function(num){
         var z = r*Math.sin(angle*i);
         var s = document.createElement('a-sphere');
         s.setAttribute('radius', '.5');
-        s.setAttribute('material', 'opacity', .6);
+        s.setAttribute('material', 'opacity', .4);
         s.setAttribute('id', 's'+i);
         s.setAttribute('color', environmentColor);
         s.setAttribute('position', x +' ' + y + ' ' + z);
