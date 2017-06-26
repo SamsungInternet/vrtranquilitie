@@ -93,8 +93,8 @@ var createSplash = function(){
     document.querySelector('#splashScreen').appendChild(btnGPS);
     document.querySelector('#splashScreen').appendChild(btnMic);
 
-    document.querySelector('#micImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(true)});
-    document.querySelector('#gpsImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(false)});
+    document.querySelector('#micImage').addEventListener('mouseEnter', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(true)});
+    document.querySelector('#gpsImage').addEventListener('mouseEnter', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(false)});
 
 
 };
