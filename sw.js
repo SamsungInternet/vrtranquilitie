@@ -2,6 +2,26 @@
 var CACHE_NAME = 'vr-tranquilities-v1';
 var urlsToCache = [
     'js/data.js',
+    'js/aframe.min.js',
+    'index.html',
+    'audio/car_horn.wav',
+    'audio/please_hold.mp3',
+    'audio/police_siren.mp3',
+    'audio/polish_ad.mp3',
+    'audio/street_walking.mp3',
+    'css/style.css',
+    'imgs/btnGPS.png',
+    'imgs/btnMic.png',
+    'imgs/cr.jpg',
+    'imgs/def.jpg',
+    'imgs/fr.jpg',
+    'imgs/kr.jpg',
+    'imgs/la.jpg',
+    'imgs/sg.jpg',
+    'imgs/icon192.png',
+    'imgs/icon512.png',
+    'imgs/splash.png',
+    'imgs/uk.jpg',
     'index.html'
 ];
 
