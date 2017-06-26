@@ -94,12 +94,18 @@ var createSplash = function(){
     document.querySelector('#micImage').addEventListener('click', function(){
         document.querySelector('#splashScreen').emit('goAway');
         startVRExp(true);
-        ambientSoundTag.play();
     });
     document.querySelector('#gpsImage').addEventListener('click', function(){
         document.querySelector('#splashScreen').emit('goAway');
         startVRExp(false);
-        ambientSoundTag.play();
+        var playPromise = ambientSoundTag.play();
+        if(playPromise !== undefined){
+            playPromise.then(function(){
+                console.log('playing music');
+            }).catch(function(error){
+                console.log('needs UI to start playing');
+            });
+        }
     });
 
 
@@ -109,13 +115,7 @@ var createSplash = function(){
 var startVRExp = function(useMic){
     console.log('mic: ' + useMic);
     setAudio(useMic);
-    //startSpiralSounds(useMic); 
     window.requestAnimationFrame(visualize);
-};
-
-var startSpiralSounds = function(){
-    if(!usingMic)
-        ambientSoundTag.play();
 };
 
 //visual loop for vr
@@ -123,7 +123,7 @@ var visualize = function(){
     sampleFrequency();
     for(i = 0 ; i < sample.length; i++){
         if(myDataArray != null){
-            if(Math.abs(myDataArray[128]) < 100)
+            if(Math.abs(myDataArray[64]) < 120)
                  sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/30)));
                  
         }
