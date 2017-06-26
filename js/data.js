@@ -6,7 +6,6 @@ var myDataArray = null;
 var scene = document.querySelector('a-scene');
 var weather = null;
 var smartCitizenData = null;
-var environmentColor = '#FFFFFF';
 var analyser = null;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var sample = null;
@@ -40,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //sets up the environment for vr
 var setupEnvironment = function(skytag, cantObjs){
+    
     loadedPlace = skytag;
     getSmartCitizenInfo(skytag);
     setupSky(skytag);
@@ -55,7 +55,13 @@ var getAmplifierLevel = function(){
 
 //creates the splash screen to start the VR experience
 var createSplash = function(){
+    splashBanner = document.createElement('a-entity');
+    splashBanner.setAttribute('id','splashScreen');
+    splashBanner.innerHTML = "<a-animation attribute=\"position\" dur=\"10000\" to=\"0 100 0\" begin=\"goAway\"></a-animation>";
     
+    console.log(splashBanner);
+
+    document.getElementsByTagName('a-scene')[0].appendChild(splashBanner);
 
     splash = document.createElement('a-image');
     splash.setAttribute('src', '#splash');
@@ -63,7 +69,7 @@ var createSplash = function(){
     splash.setAttribute('height', 4);
     splash.setAttribute('transparent', 'true');
     splash.setAttribute('position', '0.1 2 -3');
-    document.querySelector('a-scene').appendChild(splash);
+    document.querySelector('#splashScreen').appendChild(splash);
 
     btnGPS = document.createElement('a-image');
     btnGPS.setAttribute('id', 'gpsImage');
@@ -84,11 +90,12 @@ var createSplash = function(){
     btnMic.setAttribute('position', '-0.45 1.6 -2.8');
     //btnMic.setAttribute('onclick', 'startVRExp(true)');
     
-    document.querySelector('a-scene').appendChild(btnGPS);
-    document.querySelector('a-scene').appendChild(btnMic);
+    document.querySelector('#splashScreen').appendChild(btnGPS);
+    document.querySelector('#splashScreen').appendChild(btnMic);
 
-    document.querySelector('#micImage').addEventListener('click', function(){startVRExp(true)});
-    document.querySelector('#gpsImage').addEventListener('click', function(){startVRExp(false)});
+    document.querySelector('#micImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(true)});
+    document.querySelector('#gpsImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(false)});
+
 
 };
 
@@ -250,7 +257,6 @@ var createShapes = function(num, r){
         var z = r*Math.sin(angle*i);
         var s = document.createElement('a-sphere');
         s.setAttribute('radius', '.5');
-        s.setAttribute('color', environmentColor);
         s.setAttribute('position', x +' ' + y + ' ' + z);
         scene.appendChild(s);
     }
@@ -279,7 +285,6 @@ var createSpiral = function(num){
         s.setAttribute('radius', '.5');
         s.setAttribute('material', 'opacity', .55);
         s.setAttribute('id', 's'+i);
-        s.setAttribute('color', environmentColor);
         s.setAttribute('position', x +' ' + y + ' ' + z);
         
         //sound
