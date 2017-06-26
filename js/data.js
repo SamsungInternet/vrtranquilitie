@@ -19,7 +19,7 @@ var start = function(place){
     playPromise = ambientSoundTag.play();
         if(playPromise !== undefined){
             playPromise.then(function(){
-                
+                ambientSoundTag.pause();                
             }).catch(function(error){
                 console.log('cant play');
             });
