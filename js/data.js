@@ -1,7 +1,13 @@
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var loadedPlace = null;
 var ambientSoundTag = null;
 var currentPosition = null;
 var smartCitizenData = null;
+var analyser = null;
+var myDataArray = null;
+var useMic = false;
+var sample = null;
+var ampLevel = 1;
 var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'cr':{'coords':{'latitude':10.6267, 'longitude':-85.4437}},
              'sg':{'coords':{'latitude':1.3521, 'longitude':103.8198}},
@@ -19,13 +25,13 @@ var start = function(place){
     playPromise = ambientSoundTag.play();
         if(playPromise !== undefined){
             playPromise.then(function(){
-                ambientSoundTag.pause();                
+                //ambientSoundTag.pause();                
             }).catch(function(error){
                 console.log('cant play');
             });
         }
         else{
-            ambientSoundTag.pause();
+            //ambientSoundTag.pause();
         }
         //sets up skybox
         setupSky(loadedPlace);
@@ -42,8 +48,12 @@ var start = function(place){
         createSpiral(100);
         //creates splash screen
         createSplash();
+        //sets the audio
+        setAudio(useMic);
+        //start VR visuals
         
-
+        ambientSoundTag.play();
+        window.requestAnimationFrame(visualize);
 
     
 };
@@ -88,8 +98,10 @@ var getSmartCitizenInfo = function(lat, lon){
 
 //gets the amplifier level for volume and size
 var getAmplifierLevel = function(){
-    ampLevel = parseFloat((getLocalDecibels()/85).toPrecision(3)); //85dB is considered the limit for noise in 8h exposure
+    ampLevel = parseFloat((getLocalDecibels()/85).toPrecision(3));
     console.log('amp level: '+ ampLevel);
+    return ampLevel; //85dB is considered the limit for noise in 8h exposure
+    
 };
 
 //gets the decibels in the single nearest smartcitizen kit or in the area (average)
@@ -209,3 +221,63 @@ var createSpiral = function(num){
 function getRandomArbitrary(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 }
+
+//sets the required environment for audio manipulation
+var setAudio = function(useMic){
+    //create audio nodes
+    source = null;
+    usingMic = useMic;
+    if(useMic){
+        //get microphone stream 
+        var mediaconstraints = {audio:true}; //defines media device constraints    
+        navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
+            //create audio nodes
+            source = audioCtx.createMediaStreamSource(mediaStream);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 512;
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = getAmplifierLevel();
+            myDataArray = new Float32Array(analyser.frequencyBinCount);
+            analyser.getFloatFrequencyData(myDataArray); 
+            //connect nodes
+            source.connect(gainNode);
+            gainNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
+        }).catch(function(err){console.log(err);}); 
+    }
+    else{
+        source = audioCtx.createMediaElementSource(ambientSoundTag);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        gainNode = audioCtx.createGain();
+        //gainNode.gain.value = getAmplifierLevel();
+        myDataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(myDataArray); 
+        //connect nodes
+        source.connect(gainNode);
+        gainNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+    }    
+};
+
+//samples the data from the audio source
+var sampleFrequency = function(){
+    if(analyser != null){
+        myDataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(myDataArray);    
+    }
+};
+
+//vr visualization loop
+var visualize = function(){
+    sample = document.getElementsByTagName('a-sphere');
+    sampleFrequency();
+    for(i = 0 ; i < sample.length; i++){
+        if(myDataArray != null){
+            if(Math.abs(myDataArray[64]) < 120)
+                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/30)));
+                 
+        }
+    }
+    window.requestAnimationFrame(visualize);
+};

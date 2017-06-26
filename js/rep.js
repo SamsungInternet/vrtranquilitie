@@ -5,9 +5,9 @@ var _APPID = 'ca0164a4646ab31e6f171460d83340d3';
 var myDataArray = null;
 var scene = document.querySelector('a-scene');
 var weather = null;
-var smartCitizenData = null;
-var analyser = null;
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+
+
 var sample = null;
 
 var usingMic = false; 
@@ -21,9 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(ext_res != ''){
         loadedPlace = ext_res;
     }
-
-    
-    
+   
 });
 
 //sets up the environment for vr
@@ -34,74 +32,6 @@ var setupEnvironment = function(skytag, cantObjs){
     createSpiral(cantObjs);
     createSplash();
     sample = document.getElementsByTagName('a-sphere');
-};
-
-//starts the asnimation frame loop
-var startVRExp = function(useMic){
-    console.log('mic: ' + useMic);
-    setAudio(useMic);
-    window.requestAnimationFrame(visualize);
-};
-
-//visual loop for vr
-var visualize = function(){
-    sampleFrequency();
-    for(i = 0 ; i < sample.length; i++){
-        if(myDataArray != null){
-            if(Math.abs(myDataArray[64]) < 120)
-                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/30)));
-                 
-        }
-    }
-    window.requestAnimationFrame(visualize);
-};
-
-
-
-//sets the required environment for audio manipulation
-var setAudio = function(useMic){
-    //create audio nodes
-    source = null;
-    usingMic = useMic;
-    if(useMic){
-        //get microphone stream 
-        var mediaconstraints = {audio:true}; //defines media device constraints    
-        navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
-            //create audio nodes
-            source = audioCtx.createMediaStreamSource(mediaStream);
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 512;
-            gainNode = audioCtx.createGain();
-            gainNode.gain.value = ampLevel;
-            myDataArray = new Float32Array(analyser.frequencyBinCount);
-            analyser.getFloatFrequencyData(myDataArray); 
-            //connect nodes
-            source.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioCtx.destination);
-        }).catch(function(err){console.log(err);}); 
-    }
-    else{
-        source = audioCtx.createMediaElementSource(ambientSoundTag);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 1024;
-        gainNode = audioCtx.createGain();
-        gainNode.gain.value = ampLevel;
-        myDataArray = new Float32Array(analyser.frequencyBinCount);
-        analyser.getFloatFrequencyData(myDataArray); 
-        //connect nodes
-        source.connect(gainNode);
-        gainNode.connect(analyser);
-        analyser.connect(audioCtx.destination);
-    }    
-};
-
-//samples the data from the audio source
-var sampleFrequency = function(){
-    if(analyser != null){
-        myDataArray = new Float32Array(analyser.frequencyBinCount);
-        analyser.getFloatFrequencyData(myDataArray);    
-    }
 };
 
 //gets the information form the openweathermap api for a location
@@ -118,8 +48,6 @@ var getWeatherInfo = function(){
     dataReq.send();
 };
 
-
-
 //lightens/darkens a shade of color
 function shadeColor2(color, percent) {   
     var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
@@ -131,8 +59,6 @@ function blendColors(c0, c1, p) {
     var f=parseInt(c0.slice(1),16),t=parseInt(c1.slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF,R2=t>>16,G2=t>>8&0x00FF,B2=t&0x0000FF;
     return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
 }
-
-
 
 //creates a ring of spheres
 var createShapes = function(num, r){
@@ -149,8 +75,6 @@ var createShapes = function(num, r){
         scene.appendChild(s);
     }
 };
-
-
 
 //gets a query string parameter
 function getUrlParameter(name) {
