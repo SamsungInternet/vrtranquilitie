@@ -16,17 +16,46 @@ var usingMic = false;
 var ampLevel = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    //set location
-    if ('geolocation' in navigator){
-        navigator.geolocation.getCurrentPosition(function(ppos){
-            pos = ppos;
-            setupEnvironment();
-        }, function(error){pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};});
+    var ext_res = getUrlParameter('loc');
+    if(ext_res != ''){
+        switch (ext_res){
+            case 'sg':
+                console.log('loading SG');
+                break;
+            case 'fr':
+                console.log('loading FR');
+                break;
+            case 'cr':
+                console.log('loading CR');
+                break;
+            case 'uk':
+                console.log('loading UK');
+                break;
+            case 'kr':
+                console.log('loading KR');
+                break;
+            case 'la':
+                console.log('loading LA');
+                break;
+            default:
+                break;
+        }
     }
     else{
-       pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
-       setupEnvironment();
+        console.log('loading GPS or MIC');
+        //set location
+        if ('geolocation' in navigator){
+            navigator.geolocation.getCurrentPosition(function(ppos){
+                pos = ppos;
+                setupEnvironment();
+            }, function(error){pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};});
+        }
+        else{
+        pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
+        setupEnvironment();
+        }
     }
+
     ambientSoundTag = document.querySelector('#street');
 });
 
@@ -284,3 +313,11 @@ var createSpiral = function(num){
 function getRandomArbitrary(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
+
+//gets a query string parameter
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+};
