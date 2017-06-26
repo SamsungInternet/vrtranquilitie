@@ -9,7 +9,7 @@ var smartCitizenData = null;
 var analyser = null;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var sample = null;
-var ambientSoundTag = document.querySelector('#street');
+var ambientSoundTag = null;
 var usingMic = false; 
 var ampLevel = null;
 var loadedPlace = 'def';
@@ -32,8 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
         setupEnvironment(loadedPlace,100);
     }
-
-
     ambientSoundTag = document.querySelector('#street');
 });
 
@@ -93,8 +91,16 @@ var createSplash = function(){
     document.querySelector('#splashScreen').appendChild(btnGPS);
     document.querySelector('#splashScreen').appendChild(btnMic);
 
-    document.querySelector('#micImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(true)});
-    document.querySelector('#gpsImage').addEventListener('click', function(){document.querySelector('#splashScreen').emit('goAway');startVRExp(false)});
+    document.querySelector('#micImage').addEventListener('click', function(){
+        document.querySelector('#splashScreen').emit('goAway');
+        startVRExp(true);
+        ambientSoundTag.play();
+    });
+    document.querySelector('#gpsImage').addEventListener('click', function(){
+        document.querySelector('#splashScreen').emit('goAway');
+        startVRExp(false);
+        ambientSoundTag.play();
+    });
 
 
 };
@@ -103,7 +109,7 @@ var createSplash = function(){
 var startVRExp = function(useMic){
     console.log('mic: ' + useMic);
     setAudio(useMic);
-    startSpiralSounds(useMic); 
+    //startSpiralSounds(useMic); 
     window.requestAnimationFrame(visualize);
 };
 
