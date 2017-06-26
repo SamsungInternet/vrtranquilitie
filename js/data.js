@@ -25,13 +25,13 @@ var start = function(place){
     playPromise = ambientSoundTag.play();
         if(playPromise !== undefined){
             playPromise.then(function(){
-                //ambientSoundTag.pause();                
+                ambientSoundTag.play();                
             }).catch(function(error){
                 console.log('cant play');
             });
         }
         else{
-            //ambientSoundTag.pause();
+            ambientSoundTag.play();
         }
         //sets up skybox
         setupSky(loadedPlace);
@@ -125,55 +125,6 @@ var getLocalDecibels = function(single){
     }
     console.log("local dB value: "+(db/cant).toPrecision(3));
     return parseFloat((db/cant).toPrecision(3));
-};
-
-//creates the splash screen to start the VR experience
-var createSplash = function(){
-    splashBanner = document.createElement('a-entity');
-    splashBanner.setAttribute('id','splashScreen');
-    splashBanner.innerHTML = "<a-animation attribute=\"position\" dur=\"10000\" to=\"0 100 0\" begin=\"goAway\"></a-animation>";
-    
-    console.log(splashBanner);
-
-    document.getElementsByTagName('a-scene')[0].appendChild(splashBanner);
-
-    splash = document.createElement('a-image');
-    splash.setAttribute('src', '#splash');
-    splash.setAttribute('width', 2.2);
-    splash.setAttribute('height', 4);
-    splash.setAttribute('transparent', 'true');
-    splash.setAttribute('position', '0.1 2 -3');
-    document.querySelector('#splashScreen').appendChild(splash);
-
-    btnGPS = document.createElement('a-image');
-    btnGPS.setAttribute('id', 'gpsImage');
-    btnGPS.setAttribute('src', '#gps');
-    btnGPS.setAttribute('width', .7);
-    btnGPS.setAttribute('height', .7);
-    btnGPS.setAttribute('transparent', 'true');
-    btnGPS.setAttribute('position', '0.45 1.6 -2.8');
-    btnGPS.emit("btnTap", false, true);
-
-    btnMic = document.createElement('a-image');
-    btnMic.setAttribute('id', 'micImage');
-    btnMic.setAttribute('src', '#mic');
-    btnMic.setAttribute('width', .7);
-    btnMic.setAttribute('height', .7);
-    btnMic.setAttribute('transparent', 'true');
-    btnMic.setAttribute('position', '-0.45 1.6 -2.8');
-    
-    document.querySelector('#splashScreen').appendChild(btnGPS);
-    document.querySelector('#splashScreen').appendChild(btnMic);
-
-    document.querySelector('#micImage').addEventListener('click', function(){
-        document.querySelector('#splashScreen').emit('goAway');
-        startVRExp(true);
-    });
-    document.querySelector('#gpsImage').addEventListener('click', function(){
-        document.querySelector('#splashScreen').emit('goAway');
-        startVRExp(false);
-        playPromise;
-    });
 };
 
 //creates the spiral shape
