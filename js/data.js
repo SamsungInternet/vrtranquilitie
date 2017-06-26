@@ -9,61 +9,41 @@ var smartCitizenData = null;
 var environmentColor = '#FFFFFF';
 var analyser = null;
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var speakerRepScale = 15;
 var sample = null;
 var ambientSoundTag = document.querySelector('#street');
 var usingMic = false; 
 var ampLevel = null;
+var loadedPlace = 'def';
 
 document.addEventListener('DOMContentLoaded', function() {
+    //checks if it should load a default location
     var ext_res = getUrlParameter('loc');
     if(ext_res != ''){
-        switch (ext_res){
-            case 'sg':
-                console.log('loading SG');
-                break;
-            case 'fr':
-                console.log('loading FR');
-                break;
-            case 'cr':
-                console.log('loading CR');
-                break;
-            case 'uk':
-                console.log('loading UK');
-                break;
-            case 'kr':
-                console.log('loading KR');
-                break;
-            case 'la':
-                console.log('loading LA');
-                break;
-            default:
-                break;
-        }
+        loadedPlace = ext_res;
+    }
+
+    //set location
+    if ('geolocation' in navigator){
+        navigator.geolocation.getCurrentPosition(function(ppos){
+            pos = ppos;
+            setupEnvironment(loadedPlace, 100);
+        }, function(error){pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};});
     }
     else{
-        console.log('loading GPS or MIC');
-        //set location
-        if ('geolocation' in navigator){
-            navigator.geolocation.getCurrentPosition(function(ppos){
-                pos = ppos;
-                setupEnvironment();
-            }, function(error){pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};});
-        }
-        else{
         pos = {'coords':{'latitude':48.8566, 'longitude':2.3522}};
-        setupEnvironment();
-        }
+        setupEnvironment(loadedPlace,100);
     }
+
 
     ambientSoundTag = document.querySelector('#street');
 });
 
 //sets up the environment for vr
-var setupEnvironment = function(){
-    getSmartCitizenInfo();
-    setupSky();
-    createSpiral(95);
+var setupEnvironment = function(skytag, cantObjs){
+    loadedPlace = skytag;
+    getSmartCitizenInfo(skytag);
+    setupSky(skytag);
+    createSpiral(cantObjs);
     createSplash();
     sample = document.getElementsByTagName('a-sphere');
 };
@@ -114,6 +94,7 @@ var createSplash = function(){
 
 //starts the asnimation frame loop
 var startVRExp = function(useMic){
+    console.log('mic: ' + useMic);
     setAudio(useMic);
     startSpiralSounds(useMic); 
     window.requestAnimationFrame(visualize);
@@ -127,17 +108,24 @@ var startSpiralSounds = function(){
 //visual loop for vr
 var visualize = function(){
     sampleFrequency();
-    
     for(i = 0 ; i < sample.length; i++){
-        if(myDataArray[64] != Number.NEGATIVE_INFINITY)
-        sample[i].setAttribute('radius', Math.abs(myDataArray[64]/speakerRepScale)*ampLevel);
+        if(myDataArray != null){
+            if(Math.abs(myDataArray[128]) < 100)
+                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/30)));
+                 
+        }
     }
     window.requestAnimationFrame(visualize);
 };
 
 //sets up the initial skybox
-var setupSky = function(){
+var setupSky = function(tag){
+    var skybg = document.createElement('a-image');
+    skybg.setAttribute('id', 'sky');
+    skybg.setAttribute('src', 'imgs/'+tag+'.jpg');
+    document.getElementsByTagName('a-assets')[0].appendChild(skybg);
     scene = document.querySelector('a-scene');
+    
     var sky = document.createElement('a-sky');
     sky.setAttribute('src', '#sky');
     scene.appendChild(sky);
@@ -152,20 +140,19 @@ var setAudio = function(useMic){
         //get microphone stream 
         var mediaconstraints = {audio:true}; //defines media device constraints    
         navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
-        //create audio nodes
-        source = audioCtx.createMediaStreamSource(mediaStream);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 1024;
-        gainNode = audioCtx.createGain();
-        gainNode.gain.value = ampLevel;
-        myDataArray = new Float32Array(analyser.frequencyBinCount);
-        analyser.getFloatFrequencyData(myDataArray); 
-        //connect nodes
-        source.connect(gainNode);
-        gainNode.connect(analyser);
-        analyser.connect(audioCtx.destination);
+            //create audio nodes
+            source = audioCtx.createMediaStreamSource(mediaStream);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 512;
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = ampLevel;
+            myDataArray = new Float32Array(analyser.frequencyBinCount);
+            analyser.getFloatFrequencyData(myDataArray); 
+            //connect nodes
+            source.connect(gainNode);
+            gainNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
         }).catch(function(err){console.log(err);}); 
-
     }
     else{
         source = audioCtx.createMediaElementSource(ambientSoundTag);
@@ -184,8 +171,10 @@ var setAudio = function(useMic){
 
 //samples the data from the audio source
 var sampleFrequency = function(){
-    myDataArray = new Float32Array(analyser.frequencyBinCount);
-    analyser.getFloatFrequencyData(myDataArray);
+    if(analyser != null){
+        myDataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(myDataArray);    
+    }
 };
 
 //gets the information form the openweathermap api for a location
@@ -288,7 +277,7 @@ var createSpiral = function(num){
         var z = r*Math.sin(angle*i);
         var s = document.createElement('a-sphere');
         s.setAttribute('radius', '.5');
-        s.setAttribute('material', 'opacity', .4);
+        s.setAttribute('material', 'opacity', .55);
         s.setAttribute('id', 's'+i);
         s.setAttribute('color', environmentColor);
         s.setAttribute('position', x +' ' + y + ' ' + z);
