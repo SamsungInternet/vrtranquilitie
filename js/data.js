@@ -235,7 +235,7 @@ var visualize = function(){
             if(Math.abs(myDataArray[64]) < 120){
                 //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));
                 dBRatio = (mindB/maxdB)*sizeModifier;
-                sample[i].setAttribute('radius',getRandomArbitrary(1, 3));   
+                sample[i].setAttribute('radius',getRandomArbitrary(Math.abs(myDataArray[64]/40)));   
             }
                   
          }
