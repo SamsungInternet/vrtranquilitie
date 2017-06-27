@@ -40,7 +40,7 @@ var start = function(place){
             ambientSoundTag.play();
         }*/
         ambientSoundTag.play();
-        //ambientSoundTag.pause();
+        ambientSoundTag.pause();
 
 
 
@@ -49,7 +49,7 @@ var start = function(place){
         //gets current position
         getGeoLocation();
         //get configured coordinates
-        if(loadedPlace != null && loadedPlace=='mic'){
+        if(loadedPlace != null){
             getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
         }
         else{
@@ -60,7 +60,6 @@ var start = function(place){
         //sets the audio
         setAudio(useMic);
         //start VR visuals
-        
         ambientSoundTag.play();
         window.requestAnimationFrame(visualize);
 
