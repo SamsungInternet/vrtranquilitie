@@ -22,6 +22,9 @@ var start = function(place){
     document.querySelector('#userGesture').style.display = 'none';
     //readies ambient sound
     ambientSoundTag = document.querySelector('#street');
+    
+    
+    /*
     playPromise = ambientSoundTag.play();
         if(playPromise !== undefined){
             playPromise.then(function(){
@@ -32,7 +35,12 @@ var start = function(place){
         }
         else{
             ambientSoundTag.play();
-        }
+        }*/
+        ambientSoundTag.play();
+        //ambientSoundTag.pause();
+
+
+
         //sets up skybox
         setupSky(loadedPlace);
         //gets current position
