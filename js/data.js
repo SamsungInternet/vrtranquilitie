@@ -232,11 +232,14 @@ var sampleFrequency = function(){
 var visualize = function(){
     sample = document.getElementsByTagName('a-sphere');
     sampleFrequency();
-    // for(i = 0 ; i < sample.length; i++){
-    //     if(myDataArray != null){
-    //         if(Math.abs(myDataArray[64]) < 120)
-    //              sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
-    //     }
-    // }
+     for(i = 0 ; i < sample.length; i++){
+         if(myDataArray != null){
+            if(Math.abs(myDataArray[64]) < 120){
+                //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
+                sample[i].setAttribute('radius', getRandomArbitrary(3, 6));
+            }
+                  
+         }
+     }
     window.requestAnimationFrame(visualize);
 };
