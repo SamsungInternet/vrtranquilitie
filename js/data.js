@@ -48,7 +48,6 @@ var start = function(place){
 
         //sets up skybox
         setupSky(loadedPlace);
-        //gets current position
         
         //get configured coordinates
         if(loadedPlace != null){
@@ -233,11 +232,11 @@ var sampleFrequency = function(){
 var visualize = function(){
     sample = document.getElementsByTagName('a-sphere');
     sampleFrequency();
-    for(i = 0 ; i < sample.length; i++){
-        if(myDataArray != null){
-            if(Math.abs(myDataArray[64]) < 120)
-                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
-        }
-    }
+    // for(i = 0 ; i < sample.length; i++){
+    //     if(myDataArray != null){
+    //         if(Math.abs(myDataArray[64]) < 120)
+    //              sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
+    //     }
+    // }
     window.requestAnimationFrame(visualize);
 };
