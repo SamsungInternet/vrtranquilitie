@@ -14,7 +14,9 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'sg':{'coords':{'latitude':1.3521, 'longitude':103.8198}},
              'kr':{'coords':{'latitude':37.5665, 'longitude':126.9780}},
              'us':{'coords':{'latitude':34.0522, 'longitude':-118.2437}},
-             'uk':{'coords':{'latitude':51.5074, 'longitude':0.1278}}};
+             'uk':{'coords':{'latitude':51.5074, 'longitude':0.1278}},
+             'mic':{'coords':{'latitude':34.0522, 'longitude':-118.2437}},
+             'gps':{'coords':{'latitude':34.0522, 'longitude':-118.2437}},};
 
 var start = function(place){
     //gets current position
@@ -41,10 +43,10 @@ var start = function(place){
         else{
             ambientSoundTag.play();
         }*/
-        ambientSoundTag.play();
-        ambientSoundTag.pause();
-
-
+        if(place != 'mic'){
+            ambientSoundTag.play();
+        }
+        else{useMic = true;}
 
         //sets up skybox
         setupSky(loadedPlace);
@@ -61,7 +63,6 @@ var start = function(place){
         //sets the audio
         setAudio(useMic);
         //start VR visuals
-        ambientSoundTag.play();
         window.requestAnimationFrame(visualize);
 
     
@@ -235,8 +236,7 @@ var visualize = function(){
      for(i = 0 ; i < sample.length; i++){
          if(myDataArray != null){
             if(Math.abs(myDataArray[64]) < 120){
-                //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
-                sample[i].setAttribute('radius', getRandomArbitrary(3, 6));
+                sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
             }
                   
          }
