@@ -8,7 +8,9 @@ var myDataArray = null;
 var useMic = false;
 var sample = null;
 var ampLevel = 1;
-var sizeModifier = 40;
+var maxdB = 0;
+var mindB = 120;
+var sizeModifier = 2;
 var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'cr':{'coords':{'latitude':10.6267, 'longitude':-85.4437}},
              'sg':{'coords':{'latitude':1.3521, 'longitude':103.8198}},
@@ -20,50 +22,36 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
 
 var start = function(place){
     //gets current position
-    getGeoLocation();
+    //getGeoLocation();
     //removes default sky (paris)
-    document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
+    //document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
-    loadedPlace = place;
+    //loadedPlace = place;
     //hides splash screen
     document.querySelector('#splashBody').style.display = 'none';
-    //readies ambient sound
-    ambientSoundTag = document.querySelector('#street');
-    
-    
-    /*
-    playPromise = ambientSoundTag.play();
-        if(playPromise !== undefined){
-            playPromise.then(function(){
-                ambientSoundTag.play();                
-            }).catch(function(error){
-                console.log('cant play');
-            });
-        }
-        else{
-            ambientSoundTag.play();
-        }*/
-        if(place != 'mic'){
-            ambientSoundTag.play();
-        }
-        else{useMic = true;}
+    //readies sound
+    setAudio(useMic);
+    // if(place != 'mic'){
+    //     ambientSoundTag.play();
+    // }
+    // else{useMic = true;}
 
-        //sets up skybox
-        setupSky(loadedPlace);
-        
-        //get configured coordinates
-        if(loadedPlace != null){
-            getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
-        }
-        else{
-            getSmartCitizenInfo(currentPosition.coords.latitude, currentPosition.coords.longitude);
-        }
-        //creates spiral
-        createSpiral(100);
-        //sets the audio
-        setAudio(useMic);
-        //start VR visuals
-        window.requestAnimationFrame(visualize);
+    //sets up skybox
+    //setupSky(loadedPlace);
+    
+    //get configured coordinates
+    // if(loadedPlace != null){
+    //     getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
+    // }
+    // else{
+    //     getSmartCitizenInfo(currentPosition.coords.latitude, currentPosition.coords.longitude);
+    // }
+    //creates spiral
+    createSpiral(100);
+    //sets the audio
+    
+    //start VR visuals
+    window.requestAnimationFrame(visualize);
 
     
 };
@@ -114,10 +102,11 @@ var getAmplifierLevel = function(){
     
 };
 
-//gets the decibels in the single nearest smartcitizen kit or in the area (average)
+//gets the decibels in the single nearest smartcitizen kit or in the area (average). once it is done it will give max and min dB as well
 var getLocalDecibels = function(single){
     var db = 0;
     var cant = 0;
+    
     var hasfoundDecibel = false;
     for (i = 0; i < smartCitizenData.length; i++){
         if(!hasfoundDecibel || !single){
@@ -127,6 +116,12 @@ var getLocalDecibels = function(single){
                         db += smartCitizenData[i].data.sensors[j].value;
                         cant++;
                         hasfoundDecibel = true;
+                        if(smartCitizenData[i].data.sensors[j].value < mindB){
+                            mindB = smartCitizenData[i].data.sensors[j].value;
+                        }
+                        if(smartCitizenData[i].data.sensors[j].value > maxdB){
+                            maxdB = smartCitizenData[i].data.sensors[j].value;
+                        }
                         break;
                     }else{continue;}
                 }
@@ -186,6 +181,7 @@ function getRandomArbitrary(min, max) {
 //sets the required environment for audio manipulation
 var setAudio = function(useMic){
     //create audio nodes
+    ambientSoundTag = document.getElementById('street');
     source = null;
     usingMic = useMic;
     if(useMic){
@@ -197,7 +193,6 @@ var setAudio = function(useMic){
             analyser = audioCtx.createAnalyser();
             analyser.fftSize = 512;
             gainNode = audioCtx.createGain();
-            gainNode.gain.value = getAmplifierLevel();
             myDataArray = new Float32Array(analyser.frequencyBinCount);
             analyser.getFloatFrequencyData(myDataArray); 
             //connect nodes
@@ -218,6 +213,8 @@ var setAudio = function(useMic){
         source.connect(gainNode);
         gainNode.connect(analyser);
         analyser.connect(audioCtx.destination);
+        
+        ambientSoundTag.play();
     }    
 };
 
@@ -236,7 +233,9 @@ var visualize = function(){
      for(i = 0 ; i < sample.length; i++){
          if(myDataArray != null){
             if(Math.abs(myDataArray[64]) < 120){
-                sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
+                //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));
+                dBRatio = (mindB/maxdB)*sizeModifier;
+                sample[i].setAttribute('radius',getRandomArbitrary(1, 3));   
             }
                   
          }
