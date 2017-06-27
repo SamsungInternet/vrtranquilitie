@@ -30,12 +30,12 @@ body{
     flex-direction: row;
     flex-flow: no-wrap;
     overflow:scroll;
-    margin: 2em;
+    margin: 1.1em;
 }
 
 .sponsors{
-    max-width: 10em;
-    margin:1em;
+    max-width: 6em;
+    margin:.5em;
 }
 
 #worldMap{
