@@ -17,6 +17,8 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'uk':{'coords':{'latitude':51.5074, 'longitude':0.1278}}};
 
 var start = function(place){
+    //gets current position
+    getGeoLocation();
     //removes default sky (paris)
     document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
@@ -47,7 +49,7 @@ var start = function(place){
         //sets up skybox
         setupSky(loadedPlace);
         //gets current position
-        getGeoLocation();
+        
         //get configured coordinates
         if(loadedPlace != null){
             getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
