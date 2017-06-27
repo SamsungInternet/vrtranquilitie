@@ -8,6 +8,7 @@ var myDataArray = null;
 var useMic = false;
 var sample = null;
 var ampLevel = 1;
+var sizeModifier = 40;
 var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'cr':{'coords':{'latitude':10.6267, 'longitude':-85.4437}},
              'sg':{'coords':{'latitude':1.3521, 'longitude':103.8198}},
@@ -16,10 +17,12 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'uk':{'coords':{'latitude':51.5074, 'longitude':0.1278}}};
 
 var start = function(place){
+    //removes default sky (paris)
+    document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
     loadedPlace = place;
     //hides splash screen
-    document.querySelector('#userGesture').style.display = 'none';
+    document.querySelector('#splashBody').style.display = 'none';
     //readies ambient sound
     ambientSoundTag = document.querySelector('#street');
     
@@ -46,7 +49,7 @@ var start = function(place){
         //gets current position
         getGeoLocation();
         //get configured coordinates
-        if(loadedPlace != null){
+        if(loadedPlace != null && loadedPlace=='mic'){
             getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
         }
         else{
@@ -168,8 +171,8 @@ var createSpiral = function(num){
         }
         //next
         spiral.appendChild(s);
-        y-=0.1;
-        r+=0.1;
+        y-=0.2;
+        r+=0.2;
     }
     scene.appendChild(spiral);
 };
@@ -232,8 +235,7 @@ var visualize = function(){
     for(i = 0 ; i < sample.length; i++){
         if(myDataArray != null){
             if(Math.abs(myDataArray[64]) < 120)
-                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/30)));
-                 
+                 sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));   
         }
     }
     window.requestAnimationFrame(visualize);

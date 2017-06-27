@@ -12,24 +12,25 @@
         <script src="js/data.js"></script>
     </head>
     <body>
-        <div id="userGesture">
-            
-            <h1>Bienvenue à VR <em>Tranquilité</em></h1>
-            
-            <p>Vous allez maintenant visualiser la pollution sonore dans différents endroits à travers le monde.</p> 
-            <!--<img src="imgs/world.gif" id="worldMap">-->
-            <p>Choisissez votre pays de départ et appuyez sur 'commencer'</p>
-            <div id="flagcontainer">
-                <img src="imgs/ffr.png" alt="Paris, France" class="flagmenu" onclick="start('fr');">
-                <img src="imgs/fcr.png" alt="Guanacaste, Costa Rica" class="flagmenu" onclick="start('cr');">
-                <img src="imgs/fsg.png" alt="Singapore, Singapore" class="flagmenu" onclick="start('sg');">
-                <img src="imgs/fkr.png" alt="Seoul, Korea" class="flagmenu" onclick="start('kr');">
-                <img src="imgs/fuk.png" alt="London, United Kingdom" class="flagmenu" onclick="start('uk');">
-                <img src="imgs/fus.png" alt="Los Angeles, United States" class="flagmenu" onclick="start('us');">
-                <img src="imgs/fmc.png" alt="This room" class="flagmenu" onclick="start('mic');">
-                <img src="imgs/fgps.png" alt="This area" class="flagmenu" onclick="start('gps');">
+        <div id="splashBody">
+            <div id="userGesture">
+                <img src="imgs/vrt_title.png" id="splashTitle">
+                <p>Réalisé par Galina Mihaleva et Diego González.</p>
+                <p>Vous allez maintenant visualiser la pollution sonore dans différents endroits à travers le monde.</p> 
+                <p>Choisissez votre pays de départ et appuyez sur 'commencer'.</p>
+                <div id="flagcontainer">
+                    <img src="imgs/ffr.png" alt="Paris, France" class="flagmenu" onclick="start('fr');">
+                    <img src="imgs/fcr.png" alt="Guanacaste, Costa Rica" class="flagmenu" onclick="start('cr');">
+                    <img src="imgs/fsg.png" alt="Singapore, Singapore" class="flagmenu" onclick="start('sg');">
+                    <img src="imgs/fkr.png" alt="Seoul, Korea" class="flagmenu" onclick="start('kr');">
+                    <img src="imgs/fuk.png" alt="London, United Kingdom" class="flagmenu" onclick="start('uk');">
+                    <img src="imgs/fus.png" alt="Los Angeles, United States" class="flagmenu" onclick="start('us');">
+                    <img src="imgs/fmc.png" alt="This room" class="flagmenu" onclick="start('mic');">
+                    <img src="imgs/fgps.png" alt="This area" class="flagmenu" onclick="start('gps');">
+                </div>
+                <br><img src="imgs/adm_logo.png" class="sponsors">
+                <img src="imgs/si_logo.png" class="sponsors">
             </div>
-            <br><img src="imgs/menufooter.png" class="sponsors">
         </div>
         <audio id="micStream"></audio>
         <a-scene>
@@ -47,7 +48,7 @@
                 <a-entity cursor="fuse: true; fuseTimeout: 2000" position="0 0 -1" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" material="color: #D03642; shader: flat">
                 </a-entity>
             </a-camera>
-            
+            <a-sky src="imgs/fr.jpg" id="defStartSky">
             <a-sphere id="sample" radius="3" position="0 10 0" color="#8E001C" ></a-sphere>
             <a-plane id="floor" rotation="-90 0 0" position="0 -10 0" height="200" width="200" material="opacity:.8"></a-plane>
         </a-scene>

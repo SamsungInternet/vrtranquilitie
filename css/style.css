@@ -4,8 +4,11 @@ body{
 
 #userGesture{
     margin:0em;
-    padding: 1.5em;
-    background-color: rgba(0, 0, 0, .95);
+    padding: 2em;
+}
+
+#splashBody{
+    background-color: rgba(0, 0, 0, .8);
     color:white;
     position: absolute;
     top:0px;
@@ -16,7 +19,7 @@ body{
 }
 
 .flagmenu{
-    margin: .5em;
+    margin: 1em;
     height:4em;
     width: 6em;
     cursor: pointer;
@@ -25,14 +28,21 @@ body{
 #flagcontainer{
     display: flex;
     flex-direction: row;
-    flex-flow: wrap;
+    flex-flow: no-wrap;
+    overflow:scroll;
+    margin: 2em;
 }
 
 .sponsors{
-    max-width: 18em;
+    max-width: 10em;
+    margin:1em;
 }
 
 #worldMap{
     max-width: 150px;
     margin:auto;
+}
+
+#splashTitle{
+    max-width: 20em;
 }
