@@ -54,8 +54,6 @@ var start = function(place){
         }
         //creates spiral
         createSpiral(100);
-        //creates splash screen
-        createSplash();
         //sets the audio
         setAudio(useMic);
         //start VR visuals
