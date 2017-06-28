@@ -7,7 +7,7 @@ var analyser = null;
 var myDataArray = null;
 var useMic = false;
 var sample = null;
-var ampLevel = 1;
+var ampLevel = 0;
 var maxdB = 0;
 var mindB = 120;
 var sizeModifier = 2;
@@ -21,8 +21,6 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
              'gps':{'coords':{'latitude':34.0522, 'longitude':-118.2437}},};
 
 var start = function(place){
-    //gets current position
-    //getGeoLocation();
     //removes default sky (paris)
     document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
@@ -30,15 +28,10 @@ var start = function(place){
     //hides splash screen
     document.querySelector('#splashBody').style.display = 'none';
     //readies sound
-    //setAudio(useMic);
-    // if(place != 'mic'){
-    //     ambientSoundTag.play();
-    // }
-    // else{useMic = true;}
-
+    stap = document.getElementById('tap');
+    stap.play();
     //sets up skybox
     setupSky(loadedPlace);
-    
     //get configured coordinates
     if(loadedPlace != null){
         getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
@@ -133,6 +126,14 @@ var getLocalDecibels = function(single){
     return parseFloat((db/cant).toPrecision(3));
 };
 
+//sets up collision detection on floor
+var setCollision = function(){
+    document.getElementById('floor');
+    floor.addEventListener('collide', function(e){
+        console.log('collide '+ e.detail.body.id);
+    });
+};
+
 //creates the spiral shape
 var createSpiral = function(num){
     var angle = (360/num)+1;
@@ -153,11 +154,16 @@ var createSpiral = function(num){
         var x = r*Math.cos(angle*i);
         var z = r*Math.sin(angle*i);
         var s = document.createElement('a-sphere');
-        s.setAttribute('radius', '.5');
+        s.setAttribute('radius', '.5' + ampLevel*ampLevel);
+        console.log(ampLevel + 'this is the created amp level added');
         s.setAttribute('material', 'opacity', .55);
         s.setAttribute('id', 's'+i);
         s.setAttribute('position', x +' ' + y + ' ' + z);
         s.setAttribute('dynamic-body', '');
+        s.addEventListener('collide', function(e){
+            tap.play();
+        });
+        document.querySelector('a-scene').systems['boundary-checker'].registerMe(s);
         
         //sound
         if(i%20 == 0){
@@ -179,68 +185,3 @@ var createSpiral = function(num){
 function getRandomArbitrary(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 }
-
-//sets the required environment for audio manipulation
-var setAudio = function(useMic){
-    //create audio nodes
-    ambientSoundTag = document.getElementById('street');
-    source = null;
-    usingMic = useMic;
-    if(useMic){
-        //get microphone stream 
-        var mediaconstraints = {audio:true}; //defines media device constraints    
-        navigator.mediaDevices.getUserMedia(mediaconstraints).then(function(mediaStream){
-            //create audio nodes
-            source = audioCtx.createMediaStreamSource(mediaStream);
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 512;
-            gainNode = audioCtx.createGain();
-            myDataArray = new Float32Array(analyser.frequencyBinCount);
-            analyser.getFloatFrequencyData(myDataArray); 
-            //connect nodes
-            source.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioCtx.destination);
-        }).catch(function(err){console.log(err);}); 
-    }
-    else{
-        source = audioCtx.createMediaElementSource(ambientSoundTag);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 512;
-        gainNode = audioCtx.createGain();
-        //gainNode.gain.value = getAmplifierLevel();
-        myDataArray = new Float32Array(analyser.frequencyBinCount);
-        analyser.getFloatFrequencyData(myDataArray); 
-        //connect nodes
-        source.connect(gainNode);
-        gainNode.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        
-        ambientSoundTag.play();
-    }    
-};
-
-//samples the data from the audio source
-var sampleFrequency = function(){
-    if(analyser != null){
-        myDataArray = new Float32Array(analyser.frequencyBinCount);
-        analyser.getFloatFrequencyData(myDataArray);    
-    }
-};
-
-//vr visualization loop
-var visualize = function(){
-    sample = document.getElementsByTagName('a-sphere');
-    sampleFrequency();
-     for(i = 0 ; i < sample.length; i++){
-         if(myDataArray != null){
-            if(Math.abs(myDataArray[64]) < 120){
-                //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));
-                dBRatio = (mindB/maxdB)*sizeModifier;
-                //sample[i].setAttribute('radius',getRandomArbitrary(1, 3));   
-            }
-                  
-         }
-     }
-    window.requestAnimationFrame(visualize);
-};

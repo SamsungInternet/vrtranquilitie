@@ -11,6 +11,7 @@
         <script src="js/aframe.min.js"></script>
         <script src="js/aframe-physics-system.min.js"></script>
         <script src="js/data.js"></script>
+        <script src="js/boundaryChecker.js"></script>
     </head>
     <body>
         <div id="splashBody">
@@ -34,16 +35,12 @@
             </div>
         </div>
         <audio id="micStream"></audio>
-        <a-scene physics="debug:true;gravity:-4;restitution:0.9">
+        <a-scene physics="debug:true;gravity:-4;restitution:1.1" boundary-checker>
             <a-assets>
                 <img id="gps" src="imgs/btnGPS.png" alt="">
                 <img id="mic" src="imgs/btnMic.png" alt="">
                 <img id="splash" src="imgs/splash.png" alt="">
-                <audio id="s1" src="audio/please_hold.mp3"></audio>
-                <audio id="s2" src="audio/police_siren.mp3"></audio>
-                <audio id="s3" src="audio/polish_ad.mp3"></audio>
-                <audio id="s4" src="audio/car_horn.wav"></audio>
-                <audio id="street" src="audio/street_walking.mp3" loop="true"></audio>
+                <audio id="tap" src="audio/tap.mp3"></audio>
             </a-assets>
             <a-camera>
                 <a-entity cursor="fuse: true; fuseTimeout: 2000" position="0 0 -1" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" material="color: #D03642; shader: flat">
