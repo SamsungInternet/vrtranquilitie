@@ -22,7 +22,7 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
 
 var start = function(place){
     //gets current position
-    getGeoLocation();
+    //getGeoLocation();
     //removes default sky (paris)
     document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
