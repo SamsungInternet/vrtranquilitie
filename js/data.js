@@ -46,8 +46,7 @@ var start = function(place){
     else{
         getSmartCitizenInfo(currentPosition.coords.latitude, currentPosition.coords.longitude);
     }
-    //creates spiral
-    createSpiral(100);
+
     //sets the audio
     
     //start VR visuals
@@ -88,6 +87,8 @@ var getSmartCitizenInfo = function(lat, lon){
             let respData = JSON.parse(this.responseText);
             smartCitizenData = respData;
             amplifierLevel = getAmplifierLevel();
+            getLocalDecibels();
+            createSpiral(Math.round(maxdB));
         });
         var req= 'https://api.smartcitizen.me/v0/devices/?near='+lat+','+lon;
         dataReq.open('GET', req);
