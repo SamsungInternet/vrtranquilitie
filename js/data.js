@@ -22,30 +22,30 @@ var coords = {'fr':{'coords':{'latitude':48.8566, 'longitude':2.3522}},
 
 var start = function(place){
     //gets current position
-    //getGeoLocation();
+    getGeoLocation();
     //removes default sky (paris)
-    //document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
+    document.getElementsByTagName('a-scene')[0].remove(document.getElementById('defStartSky'));
     //sets place
-    //loadedPlace = place;
+    loadedPlace = place;
     //hides splash screen
     document.querySelector('#splashBody').style.display = 'none';
     //readies sound
-    setAudio(useMic);
+    //setAudio(useMic);
     // if(place != 'mic'){
     //     ambientSoundTag.play();
     // }
     // else{useMic = true;}
 
     //sets up skybox
-    //setupSky(loadedPlace);
+    setupSky(loadedPlace);
     
     //get configured coordinates
-    // if(loadedPlace != null){
-    //     getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
-    // }
-    // else{
-    //     getSmartCitizenInfo(currentPosition.coords.latitude, currentPosition.coords.longitude);
-    // }
+    if(loadedPlace != null){
+        getSmartCitizenInfo(coords[loadedPlace]['coords']['latitude'], coords[loadedPlace]['coords']['longitude']);
+    }
+    else{
+        getSmartCitizenInfo(currentPosition.coords.latitude, currentPosition.coords.longitude);
+    }
     //creates spiral
     createSpiral(100);
     //sets the audio
@@ -136,7 +136,7 @@ var getLocalDecibels = function(single){
 var createSpiral = function(num){
     var angle = (360/num)+1;
     var scene = document.querySelector('a-scene');
-    var y = 10;
+    var y = 50;
     var r = 5;
     var spiral = document.createElement('a-entity');
     var anim = document.createElement('a-animation');
@@ -156,6 +156,7 @@ var createSpiral = function(num){
         s.setAttribute('material', 'opacity', .55);
         s.setAttribute('id', 's'+i);
         s.setAttribute('position', x +' ' + y + ' ' + z);
+        s.setAttribute('dynamic-body', '');
         
         //sound
         if(i%20 == 0){
@@ -166,7 +167,7 @@ var createSpiral = function(num){
             s.appendChild(noise);
         }
         //next
-        spiral.appendChild(s);
+        scene.appendChild(s);
         y-=0.2;
         r+=0.2;
     }
@@ -235,7 +236,7 @@ var visualize = function(){
             if(Math.abs(myDataArray[64]) < 120){
                 //sample[i].setAttribute('radius',ampLevel*(Math.abs(myDataArray[64]/sizeModifier)));
                 dBRatio = (mindB/maxdB)*sizeModifier;
-                sample[i].setAttribute('radius',getRandomArbitrary(Math.abs(myDataArray[64]/40)));   
+                //sample[i].setAttribute('radius',getRandomArbitrary(1, 3));   
             }
                   
          }

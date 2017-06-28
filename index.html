@@ -7,8 +7,9 @@
         <link rel="manifest" href="manifest.json">
         <link href="css/style.css" rel="stylesheet">
         <link rel="stylesheet" href="f/fonts.css">
-        <script src="swreg.js"></script>
+        <!--<script src="swreg.js"></script>-->
         <script src="js/aframe.min.js"></script>
+        <script src="js/aframe-physics-system.min.js"></script>
         <script src="js/data.js"></script>
     </head>
     <body>
@@ -33,7 +34,7 @@
             </div>
         </div>
         <audio id="micStream"></audio>
-        <a-scene>
+        <a-scene physics="debug:true;gravity:-3;restitution:.95">
             <a-assets>
                 <img id="gps" src="imgs/btnGPS.png" alt="">
                 <img id="mic" src="imgs/btnMic.png" alt="">
@@ -49,8 +50,7 @@
                 </a-entity>
             </a-camera>
             <a-sky src="imgs/fr.jpg" id="defStartSky">
-            <a-sphere id="sample" radius="3" position="0 10 0" color="#8E001C" ></a-sphere>
-            <a-plane id="floor" rotation="-90 0 0" position="0 -10 0" height="200" width="200" material="opacity:.8"></a-plane>
+            <a-plane id="floor" rotation="-90 0 0" position="0 -10 0" height="500" width="500" material="opacity:.8" static-body></a-plane>
         </a-scene>
     </body>
 </html>
