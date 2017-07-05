@@ -1,4 +1,4 @@
-# VR Tranquilitie: a WebVR noise pollution viosualizer for the Tranquilitie dress (@diekus) 
+# VR Tranquilitie: a WebVR noise pollution visualizer for the Tranquilitie dress (@diekus) 
 
 Associated VR experience for VR Tranquilitie dress by Galina Mihaleva
 
